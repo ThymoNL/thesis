@@ -1,0 +1,3 @@
+[submodule "makeutils"]
+	path = makeutils
+	url = ../../tooling/makeutils.git

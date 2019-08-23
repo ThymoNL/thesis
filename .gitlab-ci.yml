@@ -1,0 +1,16 @@
+---
+include:
+  - project: figo/tooling/makeutils
+    ref: bld_2.0.2
+    file: gitlab-ci/common.yml
+
+default:
+  image: $CI_REGISTRY/figo/tooling/docker/base:20.04
+
+# Example build
+build:
+  extends: .default
+  stage: build
+  script:
+    - echo "Building..."
+    - make check-clean
