@@ -1,16 +1,15 @@
 ---
 include:
-  - project: figo/tooling/makeutils
-    ref: bld_2.0.2
-    file: gitlab-ci/common.yml
+  - project: bauwatch/tools/pipelines
+    ref: v1.1
+    file: default.gitlab-ci.yml
 
 default:
     image: $CI_REGISTRY/bauwatch/tools/docgen:BTH-58-create-latex-template
 
 # Example build
 build:
-  extends: .default
   stage: build
   script:
-    - echo "Building..."
+    - latexmk -xelatex src/main.tex
     - make check-clean
