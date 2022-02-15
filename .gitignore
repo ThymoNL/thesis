@@ -2,6 +2,9 @@
 /makefile_rules.inc
 /makefile_vars.inc
 
+## Jetbrains
+.idea/
+
 ## Latex
 ## Core latex/pdflatex auxiliary files:
 *.aux
