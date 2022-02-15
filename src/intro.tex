@@ -1,0 +1,86 @@
+\begin{titlepage} 
+\maketitle
+\vspace*{\fill}
+Status: Draft
+Version: 0.1
+Student number: 452434
+Degree: Software Engineering
+Saxion University of Applied Sciences
+Bachelor Thesis
+\thispagestyle{empty}
+\end{titlepage}
+\newpage
+
+
+\section{Contact information}
+\begin{center}
+\begin{tabular}{ | m{8em} | m{8em} | m{8em} | m{11.1em} | }
+\hline
+\textbf{Name} & \textbf{Organization} & \textbf{Function} & \textbf{E-mail}
+\\ \hline
+Thymo van Beers & BauWatch Technology Group & Graduate student & thymovanbeers@gmail.com
+\\ \hline
+Wouter Horlings & BauWatch Technology Group & Company mentor & whorlings@bouwatch.nl
+\\ \hline
+Peter Ebben & Saxion & Saxion mentor & p.w.g.ebben@saxion.nl
+\\ \hline
+Willem Prakken & Saxion & Graduation coordinator & w.prakken@saxion.nl
+\\ \hline
+\end{tabular}
+\end{center}
+\newpage
+\section{Acknowledgements}
+TBD
+\newpage
+%TODO Disable pagenumbering
+\section{Summary}
+This will be written at the end, max 1 page.
+\newpage
+
+\thispagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+\section{Introduction}
+BauWatch is a security system supplier that develops and operates temporary video surveillance and access control systems for use at construction sites and other remote locations.
+One of their most popular products are the video masts (called a "BauWatch"), a portable, self-contained, metal enclosure including an internal
+power source, network connectivity and a telescopic mast with cameras, green floodlights and other peripherals. A BauWatch can be lifted by a forklift and
+easily transported to the next location. Research \& Development for these products is done by BauWatch Technology Group (BTG) located in Enschede.
+
+\section{Company history}
+FIGO was created in 2007 as a product line of the Twente Institute for Wireless and Mobile Communications (TI-WMC). The name FIGO comes from the Italian word meaning:
+fig, cool, tasteful, sexy.
+They used to focus on network equipment but now also handle the cameras in the video masts
+In 2018 they were acquired by BauWatch to form their R\&D department under the name BauWatch Technology Group.
+BauWatch has a backend team under which I do my research.
+
+BauWatch Technology Group has its roots at the Ericsson research facility that was housed in Enschede until 2003. During the 90s and early 2000s Ericsson was doing
+research on DECT, Bluetooth, 3G and WiFi. After Ericsson closed their Enschede facility the Twente Institute for Wireless and Mobile Communications (TI-WMC) was created as a technology R\&D spin-off specialized in wireless mobile communications systems. The result of various networking related projects were combined in its product line FIGO that combines Wi-Fi-based multi-radio meshing with cellular and Ethernet connectivity for public safety applications. \cite{ti_wmc}
+
+In 2011 FIGO was split-off to be a sister organization to TI-WMC focusing on the sales and further development of the FIGO product. After TI-WMC defaulted in 2014, FIGO
+continued alone at a new location where it still is today. The years after the split, FIGO did various contracted projects like Sensor City Assen, Bad Boys Buster with
+Luminoxx, and BauWatch. After various projects with BauWatch, they acquired FIGO in 2018 to become its dedicated R\&D department after which it no longer focused solely on networking equipment but also doing more work with the cameras and Network Video Recorders (NVR) used by BauWatch.
+
+
+\section{Scope}
+% The project has commence on 15-11-2021 and will be completed by 22-04-2022. The scope of the project will be limited to the configuration of cameras through their APIs only. No modifications 
+% will be done to the firmware of cameras and no special consideration is given to BauWatch' network architecture other than the cameras being reachable on a unique IP-address. Furthermore the focus of the prototype will be with the manufacture API instead of ONVIF. ONVIF will only be used
+% in the specific case a part of the manufacturer API is found not to be working properly or if implementing a call to the API would cause an unacceptable delay.
+% If during the project it is determined that the implementation of the prototype will finish early, an addition can be made to add the ability for equipment other than cameras (speakers,
+% lights, etc.) to be configured.
+% The design for the prototype will not add any specifics regarding other equipment but will be designed in such a way that this addition can be made without much effort if required.
+
+% The first camera that will be investigated is a Hikvision DS-2DE4225IW-DE. BauWatch expressed that these cameras will be more actively used in the future and that it would be nice to have a working prototype using this camera model. The second camera that will be investigated is a VCA IPX3802SV because it
+% provides a different API from the Hikvision and is actively in use within BauWatch.
+
+The project commenced on November 15th 2021 and ended on April 22nd 2022. The scope of the project was limited to the configuration of cameras through their own APIs only and
+without making any firmware modifications. Since only a proof of concept was to be made, no special consideration to BauWatch' network architecture was given although it became
+evident that this wouldn't cause any obstacles either since all cameras can be reached on a unique IP-address.
+%During the definition phase of the project a thesis on implementing
+%an ONVIF plugin was found. To prevent overlap the project was reformulated so that ONVIF would not be required, the prototype could however support an interface to ONVIF in the
+%future if such an interface is deemed necessary.
+
+Two cameras were used for the project. Namely, a Hikvision DS-2DE4225IW-DE and a VCA IPX3802SV. These were selected based on the different ways the API works
+and their current or expected increased future usage in the video masts.
+\newpage
