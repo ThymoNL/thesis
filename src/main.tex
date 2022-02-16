@@ -6,10 +6,12 @@
 \usepackage{titling}
 \usepackage{array}
 \usepackage{pdflscape}
-\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{tikz,colortbl}
 \usepackage{multirow}
 \usepackage{tabulary}
+\usepackage{float}
+\usepackage{listings}
 \usepackage[acronym]{glossaries}
 \usepackage[utf8]{inputenc}
 
@@ -17,6 +19,47 @@
 \usepackage{zref-savepos}
 
 \definecolor{black}{rgb}{0,0,0}
+
+\graphicspath{ {./img/} }
+
+\newcommand\YAMLcolonstyle{\color{red}\mdseries}
+\newcommand\YAMLkeystyle{\color{black}\bfseries}
+\newcommand\YAMLvaluestyle{\color{blue}\mdseries}
+
+\makeatletter
+
+% here is a macro expanding to the name of the language
+% (handy if you decide to change it further down the road)
+\newcommand\language@yaml{yaml}
+
+\expandafter\expandafter\expandafter\lstdefinelanguage
+\expandafter{\language@yaml}
+{
+  keywords={true,false,null,y,n},
+  keywordstyle=\color{darkgray}\bfseries,
+  basicstyle=\YAMLkeystyle,                                 % assuming a key comes first
+  sensitive=false,
+  comment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\YAMLvaluestyle\ttfamily,
+  moredelim=[l][\color{orange}]{\&},
+  moredelim=[l][\color{magenta}]{*},
+  moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},   % switch to value style at :
+  morestring=[b]',
+  morestring=[b]",
+  literate =    {---}{{\ProcessThreeDashes}}3
+                {>}{{\textcolor{red}\textgreater}}1     
+                {|}{{\textcolor{red}\textbar}}1 
+                {\ -\ }{{\mdseries\ -\ }}3,
+}
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+\newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}
+
 
 \newcounter{NoTableEntry}
 \renewcommand*{\theNoTableEntry}{NTE-\the\value{NoTableEntry}}
@@ -48,7 +91,7 @@
 
 \title{Camera Provisioning}
 \author{Thymo van Beers}
-\date{January 2022}
+\date{February 2022}
 
 \begin{document}
 
@@ -56,10 +99,12 @@
 \include{research}
 \include{design}
 \include{implementation}
+\include{testing}
 \include{conclusion}
 
+% TODO: Remove this
 \section{Research methodology} \label{methods}
-Research methods are used according to the Development Oriented Triangulation (DOT) framework \cite{dot_framework}. In this chapter the methods that
+Research methods are used according to the  In this chapter the methods that
 will be used are described and their application will be handled in chapter \ref{activities}.
 \subsection{Library}
 Library research is done to explore what is already done and what guidelines and theories exist that could help you further your design. Since the advent of the internet library research is also called desk research.
@@ -139,10 +184,6 @@ Sprints will be set at two weeks and start after the sprint planning on Monday. 
 
 BTG has a separate environment for students in their systems. This way they can keep their own backlog without mixing in with work from other teams. Next to that they also have their own place to host documentation and keep their code. In case a student needs to have access to internal resources these can be made available on an as needed basis.
 
-\subsection{Communication}
-During the project there will be regular moments to communicate about the progress being made. On a daily basis this will be the stand-up. Once a week I will update my mentor and once a month a meeting will be held with Peter to communicate the progress that has been made and if any problems are expected. If a party feels that additional meetings are needed these can be added when needed.
-\newpage
-
 \section{Stakeholder analysis}
 During the definition phase a couple of stakeholders were identified. They were identified based on the fact that the outcome of the project would have
 some sort of effect on them. Thymo is conducting the project and has the biggest stake in it. Wouter and Silke are both software engineers within the
@@ -168,157 +209,9 @@ Alex is a Product Manager within BauWatch that had some ideas about the project 
     \\ \hline
     \end{tabular}
 \end{table}
-
-\section{Risk analysis}
-A risk analysis has been conducted to asses any risks that may have impact on the duration or results of the project. These risks are summed up in table
-\ref{tab:risks} along with the resulting consequence if that risk were to present itself. Each risk has an appropriate measure that can be taken to guard
-against that risk so that they are deemed acceptable to continue.
-
-\begin{table}[h]
-\centering
-\caption{Risk analysis}
-\label{tab:risks}
-    \begin{tabular}{ | m{10em} | m{10em} | m{10em} | }
-    \hline
-    \textbf{Risk} & \textbf{Consequence} & \textbf{Measure} \\
-    \hline
-    COVID-19 restrictions. & Work can not be done at the office. & Take preparations to work from home and ensure hardware that cannot leave the office is remotely accessible. \\
-    \hline
-    Project boundaries are too broad. & Not enough time to answer research questions. & Define boundaries beforehand and adjust planning if needed. \\
-    \hline
-    Research overlaps with company activities. & Parts of the done research may become redundant. & Frequently communicate progress and define boundaries together. \\
-    \hline
-    Solution is simpler than expected. & Research finishes early and doesn't have enough body. & Broaden research if required. \\
-    \hline
-    No sufficient API documentation for cameras & API needs to be reverse engineered, taking a lot of time & Use a different API with better documentation. \\
-    \hline
-    \end{tabular}
-\end{table}
-\newpage
-
-% TODO Remove?
-% \section{HBO-i domain description}
-% \begin{table}[h]
-% \centering
-% \label{tab:hboi}
-% \caption{}
-%     \begin{tabular}{ | m{10em} | m{12em} | m{10em} | }
-%     \hline
-%     \textbf{Professional activity at level 3} & \textbf{Research questions} & \textbf{Professional product(s)} \\
-%     \hline
-%     \textbf{Analyze}
-%     \newline
-    
-%     Architectural layer: Software
-    
-%     Professional activity: Analyze
-    
-%     &
-    
-%     How should a configuration be represented to express settings for different cameras?
-    
-%     What parameters are of interest to BauWatch?
-    
-%     &
-    
-%     \begin{itemize}
-%         \item Research report
-%         \item Requirements analysis
-%     \end{itemize}
-%     \\ \hline
-%     \textbf{Design}
-%     \newline
-    
-%     Architectural layer: Software
-    
-%     Professional activity: Design
-    
-%     &
-    
-%     How should a configuration be represented to express settings for different cameras?
-    
-%     How would the system architecture of a centralized parameter system be designed and implemented?
-    
-%     &
-    
-%     \begin{itemize}
-%         \item Functional Design
-%         \item Technical Design
-%     \end{itemize}
-%     \\ \hline
-%     \textbf{Realize}
-%     \newline
-    
-%     Architectural layer: Software
-    
-%     Professional activity: Realize
-    
-%     &
-    
-%     How would the system architecture of a centralized parameter system be designed and implemented?
-    
-%     &
-    
-%     \begin{itemize}
-%         \item Software Prototype
-%     \end{itemize}
-%     \\ \hline
-%     \end{tabular}
-% \end{table}
-
-\begin{landscape}
-    \section{Planning}
-The project planning can be found in table \ref{tab:planning}. Calendar weeks have been matched to the project week numbers. One week was skipped in week 52 as
-BauWatch is closed during the days between Christmas and new years.
-    \begin{table}[h]
-    \caption{Planning}
-    \label{tab:planning}
-    \begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | }
-        \hline
-        \multirow{5}{*}{} &
-        \multicolumn{3}{c|}{November} &
-        \multicolumn{4}{c|}{December} &
-        \multicolumn{4}{c|}{January} &
-        \multicolumn{4}{c|}{February} &
-        \multicolumn{5}{c|}{March} &
-        \multicolumn{3}{c|}{April}
-        \\ \hline
-        \textbf{Calendar week →} & 46 & 47 & 48 & 49 & 50 & 51 & 52 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16
-        \\ \hline
-        \textbf{Project week →} & 1 & 2 & 3 & 4 & 5 & 6 & \notableentry & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 & 22
-        \\ \hline
-        Project definition & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} && \notableentry &&&&&&&&&&&&&&&&
-        \\ \hline
-        Analysis &&&&& \cellcolor{black} & \cellcolor{black} & \notableentry & \cellcolor{black} &&&&&&&&&&&&&&&
-        \\ \hline
-        Design &&&&&&& \notableentry & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} &&&&&&&&&&&&
-        \\ \hline
-        Implementation &&&&&&& \notableentry &&&&& \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} &&&&&&
-        \\ \hline
-        Write thesis &&&&&&& \notableentry & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} & \cellcolor{black} &&&
-        \\ \hline
-        Presentation &&&&&&& \notableentry &&&&&&&&&&&&&&& \cellcolor{black} & \cellcolor{black}
-        \\ \hline
-        \multicolumn{24}{|c|}{Deadlines}
-        \\ \hline
-        Concept thesis &&&&&&&&&&&&&&&&&& 20 &&&&&
-        \\ \hline
-        Final thesis &&&&&&&&&&&&&&&&&&&& 3 &&&
-        \\ \hline
-    \end{tabular}
-    \end{table}
- \end{landscape}
  
  %%%%%%%% Plan of Approach ends here!!!! %%%%%%
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsubsection{Foreman}
-Can I make some kind of comparison?
-I should look at design patterns.
-* Factory pattern for the API mapper?
-What design pattern can be used for templates?
-Composite, 
-Is there research on Foreman?
 
 \newpage
 % TODO Replace with bibtex in template
@@ -329,7 +222,13 @@ Is there research on Foreman?
         ``The DOT-Framework", \textit{HBO-i}, [online]. Available: \url{https://ictresearchmethods.nl/The_DOT_Framework}. [Accessed: 01-12-2021]
     \bibitem{ti_wmc}
         ``Twente Institute for Wireless and Mobile Communications", \textit{SALUS}, [online]. Available:
-        \url{https://www.sec-salus.eu/consortium/ti-wmc/}. [Accessed: 20-01-2021]
+        \url{https://www.sec-salus.eu/consortium/ti-wmc/}. [Accessed: 20-01-2022]
+	\bibitem{what_is_foreman}
+		``Foreman :: Introduction", \textit{Foreman authors}, [online]. Available:
+		\url{https://www.theforeman.org/introduction.html}. [Accessed: 16-02-2022]
+	\bibitem{foreman_hostgroups}
+		``Managing Hosts", \textit{Foreman authors}, [online]. Available:
+		\url{https://docs.theforeman.org/3.1/Managing_Hosts/index-foreman-el.html}. [Accessed: 16-02-2022]
     % \bibitem{moscow}
     % ``MoSCoW Analysis (6.1.5.2)". A Guide to the Business Analysis Body of Knowledge (2 ed.).
     % International Institute of Business Analysis. 2009. ISBN 978-0-9811292-1-1

@@ -8,8 +8,12 @@ generators and automatic tests.
 \subsection{httprouter}
 I use httprouter
 
-\subsection{YAML}
-Maybe part of template part but should be mentioned around here
+\subsection{Parameters not in parent}
+Parameters can optionally be overridden by the base templates children. This is implemented using a map.
+An issue arises when in child 2 param c is added. That param is not defined in child 1 or the base template.
+How can this param be set in the first place?
+Guard against this in the model and disallow adding parameters through the webpanel.
+Additionally the base template should be initialized from some presupplied default, be it yaml or constants.
 
 \subsection{Template implementation}
 Pics:

@@ -51,6 +51,11 @@ This causes the camera to no longer operate as expected.
 % How does it work now?
 % 
 
+\subsection{Previous Work (TODO: Is this a logical place?)}
+BTG already did some experimentation to better automate equipment configuration by creating some scripts that replayed API commands but this is still
+in a very rudimentary state. Each time a setting needed to be applied to a large amount of cameras, a request would be made to an engineer who would then craft a script
+specifically for that situation.
+
 \subsection{Objective}
 BauWatch wants to find a solution which makes it possible to manage camera configurations.
 The condition to this solution is that the alternate configurations can be remotely administered in an easy way.
@@ -80,51 +85,22 @@ In order to determine how this system should be built, a research question was f
 The main question that the project will answer is: ,,How to manage a large number of remote security cameras of different models and brands with a centralized system?"
 This question is further divided into the following sub-questions.
 
-\subsection{Sub questions}
-\subsubsection{How should a configuration be represented to express settings for different cameras?}
-The camera configurations should be represented in a generic way so that they can be applied to different cameras. There also needs to be a way to detect if a camera
-has gone out of sync with the stored configuration and a way to revert configurations to previous revisions in case an erroneous setting was applied. To make this comparison the assumption is made that settings can be read back from the cameras using their APIs.
+\subsection{Subquestions}
+In order to come to an answer to the main research question it has been split into the following subquestions.
+These questions will be answered using methods from the Development Oriented Triangulation (DOT) framework \cite{dot_framework}.
+\begin{enumerate}
+	\item What parameters are of interest to BauWatch?
+	\item How should a configuration be represented to express settings for different cameras?
+	\item How would the system architecture of a centralized parameter system be designed and implemented?
+\end{enumerate}
 
-\subsubsection{How would the system architecture of a centralized parameter system be designed and implemented?}
-Once it is known how a configuration can be represented this should then be applied to the design of the prototype. This design will then be implemented into a
-prototype to demonstrate the concept using a couple of parameters that BauWatch deems relevant.
-
-\subsubsection{What parameters are of interest to BauWatch?}
-Cameras include a lot of settings that could be relevant to BauWatch. It's good to know what parameters should be implemented into the prototype and what parameters are still relevant, but don't directly add value to the prototype as their implementation would be very similar to others. To determine which parameters will be implemented a list of available parameters should be discussed with stakeholders to determine their relevancy. Some examples that could be implemented are: NTP, video (bitrate, codec, resolution, etc.) and preset schedules.
-
-\subsection{Previous Work}
-BTG already did some experimentation to better automate equipment configuration by creating some scripts that replayed API commands but this is still
-in a very rudimentary state. Each time a setting needed to be applied to a large amount of cameras, a request would be made to an engineer who would then craft a script
-specifically for that situation.
-
-% While preparations were being made for this project some preliminary library research has been conducted. During this period a previous thesis on creating an ,,ONVIF Plug-in" \cite{tim_k_onvif} was found. This thesis was found to contain a lot of material that would have been produced in the original scope of the project. This caused some
-% delays during the definition phase of the project as the scope of the assignment had to be slightly adjusted to prevent doing redundant work. 
-% The new project that was defined aims to improve areas where ONVIF does not apply. Cameras do not always implement all components through ONVIF
-% or if they do they may not properly follow the specification. These cameras do however have their own API that is known to operate properly.
+\subsection{What parameters are of interest to BauWatch?}
+Cameras include a lot of settings that could be relevant to BauWatch.
+It's good to know what parameters should be implemented into the prototype and what parameters are still relevant, but don't directly add value to the prototype as their implementation would be very similar to others.
+In order to determine the parameters that are relevant to BauWatch an interview was conducted on January 11th 2022 with Alex van der Leij, a product manager responsible for the video masts deployed around Europe.
 
 %%% Interview with Alex, where to put this?
-% TODO Design phase not clear
-\subsubsection{Interview}
-On January 11th 2022 an interview was conducted with Alex van der Leij. Alex is a product manager at
-BauWatch and is responsible for the video masts deployed around Europe. The purpose of the interview was to gain a better understanding of the problems experienced
-by the product organisation in the context of configuring cameras and to elicit requirements for the prototype. During the interview he indicated that it currently takes a lot of work to manage
-the cameras and that the current method of configuring cameras is not flexible enough which could be improved upon. He explained that the way the cameras are currently being
-administered is to configure a camera with a set of default settings which are to be considered a set of 'base settings'. These can then be exported to a file which is used as a
-'template' for other
-cameras. A downside of this approach is that it is difficult to maintain different versions of these files and that it can't easily be determined what version a camera is using.
-Another problem he indicated was that current tooling does not provide a practical way to make a single change to a batch of cameras.
 
-
-After introducing the goal of the project the question was asked as to what parameters he would find valuable to have in the initial prototype.
-The parameters that were named as candidates were: automatic camera focus and zoom, video quality, network configuration and detection sensitivity.
-Out of these parameters some of them were of particular interest to him. The first one being video quality. It would be nice to configure video quality related settings like a
-cameras bitrate and resolution because video masts may be in locations with reduced cellular network connectivity. In that case it would be beneficial to lower the video quality
-for these cameras to reduce network load. The second parameter of interest was detection sensitivity. This parameter regulates how sensitive a camera is to movement before it
-triggers an alarm to the dispatchers to attract their attention. It would be nice to quickly change this parameter so that the frequency of alarms and false alarms can be balanced.
-
-
-At the end of the interview some concerns were raised by Alex about how settings might be implemented differently by camera manufacturers. For example a sensitivity setting of 10
-on camera A might not cause the same behavior if the same value is used for camera B. A solution to this problem should be found and is described in chapter X.
 % TODO: Add reference to chapter explaining solution!!!
 
 % Indicated that:
@@ -146,14 +122,55 @@ on camera A might not cause the same behavior if the same value is used for came
 % Concern about mapping settings between cameras
 % Idea with Wouter was to allow this to be configured inside the API.+ Not part of interview though.
 % Example map mismatch: Field of view differences between VCA and Hikvision
+% TODO Design phase not clear
+\subsubsection{Interview}
+The purpose of the interview was to gain a better understanding of the problems experienced
+by the product organisation in the context of configuring cameras and to elicit requirements for the prototype. During the interview he indicated that it currently takes a lot of work to manage
+the cameras and that the current method of configuring cameras is not flexible enough which could be improved upon. He explained that the way the cameras are currently being
+administered is to configure a camera with a set of default settings which are to be considered a set of 'base settings'. These can then be exported to a file which is used as a
+'template' for other
+cameras. A downside of this approach is that it is difficult to maintain different versions of these files and that it can't easily be determined what version a camera is using.
+Another problem he indicated was that current tooling does not provide a practical way to make a single change to a batch of cameras.
 
+
+After introducing the goal of the project the question was asked as to what parameters he would find valuable to have in the initial prototype.
+The parameters that were named as candidates were: automatic camera focus and zoom, video quality, network configuration and detection sensitivity.
+Out of these parameters some of them were of particular interest to him. The first one being video quality. It would be nice to configure video quality related settings like a
+cameras bitrate and resolution because video masts may be in locations with reduced cellular network connectivity. In that case it would be beneficial to lower the video quality
+for these cameras to reduce network load. The second parameter of interest was detection sensitivity. This parameter regulates how sensitive a camera is to movement before it
+triggers an alarm to the dispatchers to attract their attention. It would be nice to quickly change this parameter so that the frequency of alarms and false alarms can be balanced.
+
+
+At the end of the interview some concerns were raised by Alex about how settings might be implemented differently by camera manufacturers. For example a sensitivity setting of 10
+on camera A might not cause the same behavior if the same value is used for camera B. A solution to this problem should be found and is described in chapter \ref{sec:design}.
+
+\subsection{How should a configuration be represented to express settings for different cameras?}
+The camera configurations should be represented in a generic way so that they can be applied to different cameras. There also needs to be a way to detect if a camera
+has gone out of sync with the stored configuration and a way to revert configurations to previous revisions in case an erroneous setting was applied. To make this comparison the assumption is made that settings can be read back from the cameras using their APIs.
+
+%TODO: Maybe add screenshots here?
 \subsection{Available product analysis / Foreman}
-Before the design and implementation of the product were made, an analysis on already available products was done to see if there were any existing solutions that could be
-used to satisfy the objective or provide a partial solution. 
+Before the design and implementation of the product were made, an analysis on already available products was done to see if there were any existing solutions that could be used to satisfy the objective or provide a partial solution to the problem.
+During the analysis a solution was found that implemented a templating system aimed at configuring Unix-like and Windows servers.
+This solution is called Foreman.
 
-\subsection{Parameters not in parent}
-Parameters can optionally be overridden by the base templates children. This is implemented using a map.
-An issue arises when in child 2 param c is added. That param is not defined in child 1 or the base template.
-How can this param be set in the first place?
-Guard against this in the model and disallow adding parameters through the webpanel.
-Additionally the base template should be initialized from some presupplied default, be it yaml or constants.
+
+,,Foreman is an open source project that helps system administrators manage servers throughout their lifecycle, from provisioning and configuration to orchestration and monitoring." \cite{what_is_foreman}
+The project gives the administrator the ability to automate repetitive tasks by supportingan interface with common configuration mannagement solutions like Puppet, Ansible, Chef and Salt.
+
+In addition to being a frontend to these configuration management solutions Foreman also provides a host management system known as ,,Host Groups" \cite{foreman_hostgroups}. In this context a host is any Linux client that Foreman manages.
+A host group functions as a template for common host settings.
+Hosts that have been assigned to a host group inherit any settings that have been defined in that group.
+Host groups can also be nested into a hierarchy.
+This way the topmost host group can serve as a base level group containing general settings for all hosts.
+The host groups that have been nested under this group will inherit its settings but also allows the administrator to provide more specific settings for that group.
+For example one could have a base level host group that defines the settings for the operating system, and nested host groups can define settings for the software running on that system.
+
+\subsection{How would the system architecture of a centralized parameter system be designed and implemented?}
+Once it is known how a configuration can be represented this should then be applied to the design of the prototype. This design will then be implemented into a
+prototype to demonstrate the concept using a couple of parameters that BauWatch deems relevant.
+
+% While preparations were being made for this project some preliminary library research has been conducted. During this period a previous thesis on creating an ,,ONVIF Plug-in" \cite{tim_k_onvif} was found. This thesis was found to contain a lot of material that would have been produced in the original scope of the project. This caused some
+% delays during the definition phase of the project as the scope of the assignment had to be slightly adjusted to prevent doing redundant work. 
+% The new project that was defined aims to improve areas where ONVIF does not apply. Cameras do not always implement all components through ONVIF
+% or if they do they may not properly follow the specification. These cameras do however have their own API that is known to operate properly.
