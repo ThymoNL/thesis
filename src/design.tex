@@ -1,8 +1,9 @@
 \section{Design}
-In this chapter the design for the Camera Provisioning system will be laid out. The Camera Provisioning system that solves the problem of being
-unable to configure cameras from a predetermined generic set of parameters by allowing easy orchestration of templates and assigning these to
-cameras that have been added to the system by the user. The design will contain both functional and technical specifications containing the
-descriptions of different components, requirements and supplemental diagrams and wireframes.
+\label{sec:design}
+In this chapter the design for the Camera Provisioning system will be laid out.
+The goal of the system is to provide a solution which makes it possible to manage camera configurations.
+The system allows the user to orchestrate parameters into different templates which can be assinged to a camera.
+The design will contain both functional and technical specifications containing the descriptions of different components, requirements and supplemental diagrams and wireframes.
 \subsection{Requirements}
 In table \ref{tab:requirements} the requirements for the system have been defined. Requirements are tracked using an identifier starting with a letter followed by a
 number and are listed in the ID column of table \ref{tab:requirements}. If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively. If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
@@ -62,31 +63,50 @@ number and are listed in the ID column of table \ref{tab:requirements}. If the i
 
 \subsection{General design}
 At the conclusion of this project the prototype is handed over to the back-end team of BauWatch.
-Since they will be further developing the prototype into a production ready system the choice was made to implement the system in Go as that programming language is used across all their new products.
+Since they will be further developing the prototype into a production ready system the choice was made to implement the system in Go as that programming language is their preferred language for new products.
 
 \subsection{Templates}
-The provisioning server will have a user interface through which a template can be configured. A template in the context of this system is a collection of lists containing camera configuration options. Templates can be built up from different layers where each layer can override
-parameters from the layer below. This allows the user to define a template that is shared by a large amount of cameras but still provides
-more fine-tuned control for certain situations. One example could be adjusting the detection sensitivity for a set of cameras at a specific
-location. These cameras would still use all the settings from the parent template but would have a different setting for camera sensitivity.
+The provisioning server will have a user interface through which a template can be configured.
+A template in the context of this system is a collection of lists containing camera configuration options.
+Templates can be built up from different layers where each layer can override parameters from the layer above.
+This allows the user to define a template that is shared by a large amount of cameras but still provides more fine-tuned control for certain situations.
+These cameras would still use all the settings from the parent template but would have a different setting for camera sensitivity.
 
 \subsubsection{Parameters}
 %TODO: How are the templates kept in memory. Describe the parameter interface
 %TODO: How will stuff look in the main application
+TBD Once I figure out how to properly abstract them in Go.
+At the moment only integer parameters are supported.
 
-\subsubsection{Storing to file} %Insert file format here (codeblock)
-Templates are stored on disk according to the following format...
+\subsubsection{Storing to file}
+Templates are stored on disk as YAML according to the following format.
+\lstinputlisting[language=yaml]{format.yaml}
 
 \subsubsection{Reading from file}
 Templates are stored on disk with the name of the parent. When this file is reloaded to instantiate a template the system must be able to discover its
 parent by its name. This can be achieved using a breadth-first search of the template tree.
-TODO: Add activity diagram.
+The operation of loading a template and linking these to their parent is described in figure \ref{fig:inserttemplate}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{insert_template_acty}
+	\caption{Template insert operation}
+	\label{fig:inserttemplate}
+\end{figure}
 
 \subsubsection{Keeping revision history}
-How are the directories structured
+In order to fullfill the ability to restore a template to a previous version a revision history is kept.
+Templates are stored in a directory with the name of that template.
+Inside that directory a template is stored as a file named with the revision number and the file extension (.yml).
+This way the latest revision can be found by sorting the files by name in descending order.
+When a template is reverted to a previous version the files will be sorted in the same manner and will be deleted until the revision to revert to is reached. An example of how this directory structure would be stored is seen in figure \ref{fig:diskstruct}
 
-\subsubsection{Parameter abstraction}
-
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{yaml_dir_struct}
+	\caption{Directory structure of templates and their revisions}
+	\label{fig:diskstruct}
+\end{figure}
 
 \subsection{Camera interface}
 The camera interface is a system component that sits between the template component and the cameras themselves. The purpose of this component
@@ -95,12 +115,22 @@ In order for a camera to accept new parameters they require a form of authentica
 To successfully interface with the cameras one or both of these authentication methods must be supported by the camera interface component.
 
 \subsection{Translating generic parameters to camera specific values}
-Take sensitivity as an example.
+Take sensitivity as an example. TBD
 
-\subsection{Wireframes}
-Insert wireframes and a description here
+\subsection{User interface}
+The components of the system can be managed through a web interface.
+They will allow the user to create a new template and add parameters to it as seen in figure \ref{fig:templatewireframe}.
+The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system (TBD still).
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.2]{wireframes}
+	\caption{Template overview  wireframe}
+	\label{fig:templatewireframe}
+\end{figure}
 
 \subsection{Design patterns}
+TBD Integrate these where applicable instead of separately.
+
 Design patterns are reusable solutions to commonly occurring software design problems. Design patterns are not ready made solutions that directly translate to machine readable code. Rather they are concepts that can be applied to solve a common problem in different situations. They may be seen as an intermediate between a programming paradigm (e.g. functional- or object-oriented programming) and
 concrete algorithms. Design patterns can be divided in three categories, namely creational, behavioral and structural.
 

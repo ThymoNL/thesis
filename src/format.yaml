@@ -1,0 +1,12 @@
+---
+revision:
+  author: "John Doe" # Who authored this revision?
+  timestamp: 0 # Unix timestamp of revision
+parent: "base" # Name
+parameters:
+  - IntegerParameter:
+      name: "timezone"
+      value: 2
+  - IntegerParameter:
+      name: "sensitivity"
+      value: 10
