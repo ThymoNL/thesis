@@ -1,10 +1,10 @@
-\section{Design}
+\chapter{Design}
 \label{sec:design}
 In this chapter the design for the Camera Provisioning system will be laid out.
 The goal of the system is to provide a solution which makes it possible to manage camera configurations.
 The system allows the user to orchestrate parameters into different templates which can be assinged to a camera.
 The design will contain both functional and technical specifications containing the descriptions of different components, requirements and supplemental diagrams and wireframes.
-\subsection{Requirements}
+\section{Requirements}
 In table \ref{tab:requirements} the requirements for the system have been defined. Requirements are tracked using an identifier starting with a letter followed by a
 number and are listed in the ID column of table \ref{tab:requirements}. If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively. If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
 \begin{table*}[h]
@@ -61,28 +61,28 @@ number and are listed in the ID column of table \ref{tab:requirements}. If the i
     \label{tab:requirements}
 \end{table*}
 
-\subsection{General design}
+\section{General design}
 At the conclusion of this project the prototype is handed over to the back-end team of BauWatch.
 Since they will be further developing the prototype into a production ready system the choice was made to implement the system in Go as that programming language is their preferred language for new products.
 
-\subsection{Templates}
+\section{Templates}
 The provisioning server will have a user interface through which a template can be configured.
 A template in the context of this system is a collection of lists containing camera configuration options.
 Templates can be built up from different layers where each layer can override parameters from the layer above.
 This allows the user to define a template that is shared by a large amount of cameras but still provides more fine-tuned control for certain situations.
 These cameras would still use all the settings from the parent template but would have a different setting for camera sensitivity.
 
-\subsubsection{Parameters}
+\subsection{Parameters}
 %TODO: How are the templates kept in memory. Describe the parameter interface
 %TODO: How will stuff look in the main application
 TBD Once I figure out how to properly abstract them in Go.
 At the moment only integer parameters are supported.
 
-\subsubsection{Storing to file}
+\subsection{Storing to file}
 Templates are stored on disk as YAML according to the following format.
 \lstinputlisting[language=yaml]{format.yaml}
 
-\subsubsection{Reading from file}
+\subsection{Reading from file}
 Templates are stored on disk with the name of the parent. When this file is reloaded to instantiate a template the system must be able to discover its
 parent by its name. This can be achieved using a breadth-first search of the template tree.
 The operation of loading a template and linking these to their parent is described in figure \ref{fig:inserttemplate}.
@@ -94,7 +94,7 @@ The operation of loading a template and linking these to their parent is describ
 	\label{fig:inserttemplate}
 \end{figure}
 
-\subsubsection{Keeping revision history}
+\subsection{Keeping revision history}
 In order to fullfill the ability to restore a template to a previous version a revision history is kept.
 Templates are stored in a directory with the name of that template.
 Inside that directory a template is stored as a file named with the revision number and the file extension (.yml).
@@ -108,16 +108,16 @@ When a template is reverted to a previous version the files will be sorted in th
 	\label{fig:diskstruct}
 \end{figure}
 
-\subsection{Camera interface}
+\section{Camera interface}
 The camera interface is a system component that sits between the template component and the cameras themselves. The purpose of this component
 is to translate the settings from a template into an API call understood by the camera. Each camera can have a different API with potentially different interpretation of parameters. This component will map the parameter from the template to an appropriate value for that camera.
 In order for a camera to accept new parameters they require a form of authentication. All cameras being used support both HTTP Basic and HTTP Digest authentication.
 To successfully interface with the cameras one or both of these authentication methods must be supported by the camera interface component.
 
-\subsection{Translating generic parameters to camera specific values}
+\section{Translating generic parameters to camera specific values}
 Take sensitivity as an example. TBD
 
-\subsection{User interface}
+\section{User interface}
 The components of the system can be managed through a web interface.
 They will allow the user to create a new template and add parameters to it as seen in figure \ref{fig:templatewireframe}.
 The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system (TBD still).
@@ -128,16 +128,16 @@ The user should also be able to manage the relations between templates as well a
 	\label{fig:templatewireframe}
 \end{figure}
 
-\subsection{Design patterns}
+\section{Design patterns}
 TBD Integrate these where applicable instead of separately.
 
 Design patterns are reusable solutions to commonly occurring software design problems. Design patterns are not ready made solutions that directly translate to machine readable code. Rather they are concepts that can be applied to solve a common problem in different situations. They may be seen as an intermediate between a programming paradigm (e.g. functional- or object-oriented programming) and
 concrete algorithms. Design patterns can be divided in three categories, namely creational, behavioral and structural.
 
-\subsubsection{Composite}
+\subsection{Composite}
 The composite pattern is a structural design pattern. With this design pattern objects can be grouped such that they are treated as a
 single instance.
 
-\subsubsection{Factory}
+\subsection{Factory}
 The factory method is a creational design pattern used for creating objects in a generic superclass that allows subclasses to change the
 specific type of object that is created.
