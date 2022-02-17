@@ -9,9 +9,12 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage[acronym]{glossaries}
+\usepackage[style=ieee]{biblatex}
 %\usepackage[hidelinks]{hyperref}
 
 \usepackage{zref-savepos}
+
+\addbibresource{refs.bib}
 
 \definecolor{black}{rgb}{0,0,0}
 
@@ -138,7 +141,7 @@ research activities as described in section \ref{methods}.
 \section{Project definition}
 \subsection{Available product analysis}
 During the definition phase of the project an available product analysis was done to evaluate relevant research done in the past that may be of relevance to this
-project. During the analysis a thesis \cite{tim_k_onvif} was found that completed a lot of work that would have been done in the original scope of the project. After
+project. During the analysis a thesis \cite{kesteloo_onvif_2016} was found that completed a lot of work that would have been done in the original scope of the project. After
 this analysis the decision was made to move the scope of the project to prevent research from unnecessarily being repeated. With the new scope in mind the analysis was
 conducted again and some solutions were found that could get and set settings from an ONVIF enabled camera but none were found that could create a generic configuration nor
 were there generic solutions for cameras not implementing ONVIF.
@@ -207,23 +210,25 @@ Alex is a Product Manager within BauWatch that had some ideas about the project 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO Replace with bibtex in template
-\begin{thebibliography}{2}
-    \bibitem{tim_k_onvif}
-        ``ONVIF Plug-in", \textit{Tim Kesteloo}, [online]. Available: \url{https://hbo-kennisbank.nl/details/sharekit_hh:oai:surfsharekit.nl:15d206a2-dc4e-4dbd-9719-339793255ddd}. [Accessed: 01-12-2021]
-    \bibitem{dot_framework}
-        ``The DOT-Framework", \textit{HBO-i}, [online]. Available: \url{https://ictresearchmethods.nl/The_DOT_Framework}. [Accessed: 01-12-2021]
-    \bibitem{ti_wmc}
-        ``Twente Institute for Wireless and Mobile Communications", \textit{SALUS}, [online]. Available:
-        \url{https://www.sec-salus.eu/consortium/ti-wmc/}. [Accessed: 20-01-2022]
-	\bibitem{what_is_foreman}
-		``Foreman :: Introduction", \textit{Foreman authors}, [online]. Available:
-		\url{https://www.theforeman.org/introduction.html}. [Accessed: 16-02-2022]
-	\bibitem{foreman_hostgroups}
-		``Managing Hosts", \textit{Foreman authors}, [online]. Available:
-		\url{https://docs.theforeman.org/3.1/Managing_Hosts/index-foreman-el.html}. [Accessed: 16-02-2022]
-    % \bibitem{moscow}
-    % ``MoSCoW Analysis (6.1.5.2)". A Guide to the Business Analysis Body of Knowledge (2 ed.).
-    % International Institute of Business Analysis. 2009. ISBN 978-0-9811292-1-1
-\end{thebibliography}
+%\begin{thebibliography}{2}
+%    \bibitem{tim_k_onvif}
+%        ``ONVIF Plug-in", \textit{Tim Kesteloo}, [online]. Available: \url{https://hbo-kennisbank.nl/details/sharekit_hh:oai:surfsharekit.nl:15d206a2-dc4e-4dbd-9719-339793255ddd}. [Accessed: 01-12-2021]
+%    \bibitem{dot_framework}
+%        ``The DOT-Framework", \textit{HBO-i}, [online]. Available: \url{https://ictresearchmethods.nl/The_DOT_Framework}. [Accessed: 01-12-2021]
+%    \bibitem{ti_wmc}
+%        ``Twente Institute for Wireless and Mobile Communications", \textit{SALUS}, [online]. Available:
+%        \url{https://www.sec-salus.eu/consortium/ti-wmc/}. [Accessed: 20-01-2022]
+%	\bibitem{what_is_foreman}
+%		``Foreman :: Introduction", \textit{Foreman authors}, [online]. Available:
+%		\url{https://www.theforeman.org/introduction.html}. [Accessed: 16-02-2022]
+%	\bibitem{foreman_hostgroups}
+%		``Managing Hosts", \textit{Foreman authors}, [online]. Available:
+%		\url{https://docs.theforeman.org/3.1/Managing_Hosts/index-foreman-el.html}. [Accessed: 16-02-2022]
+%    % \bibitem{moscow}
+%    % ``MoSCoW Analysis (6.1.5.2)". A Guide to the Business Analysis Body of Knowledge (2 ed.).
+%    % International Institute of Business Analysis. 2009. ISBN 978-0-9811292-1-1
+%\end{thebibliography}
+
+\printbibliography
 
 \end{document}
