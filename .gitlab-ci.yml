@@ -5,7 +5,7 @@ include:
     file: default.gitlab-ci.yml
 
 default:
-    image: $CI_REGISTRY/bauwatch/tools/docgen:BTH-58-create-latex-template
+  image: $CI_REGISTRY/bauwatch/tools/docgen:BTH-58-create-latex-template
 
 # Example build
 build:
