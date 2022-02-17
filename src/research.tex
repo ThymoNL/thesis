@@ -1,7 +1,7 @@
-\section{Research}
+\chapter{Research}
 Before the prototype could be implemented some research had to be conducted. This chapter will explain the problem statement and discuss the results.
 
-\subsection{Problem statement}
+\section{Problem statement}
 % Er zijn teveel handelingen/ om een camera te configuren.
 % Momenteel is er geen inzicht/controle over welke versie van een configuratie een camera heeft.
 % Daardoor mogen een aantal instellingen niet zomaar aangepast worden als dit voor een situatie wenselijk is.
@@ -51,12 +51,12 @@ This causes the camera to no longer operate as expected.
 % How does it work now?
 % 
 
-\subsection{Previous Work (TODO: Is this a logical place?)}
+\section{Previous Work (TODO: Is this a logical place?)}
 BTG already did some experimentation to better automate equipment configuration by creating some scripts that replayed API commands but this is still
 in a very rudimentary state. Each time a setting needed to be applied to a large amount of cameras, a request would be made to an engineer who would then craft a script
 specifically for that situation.
 
-\subsection{Objective}
+\section{Objective}
 BauWatch wants to find a solution which makes it possible to manage camera configurations.
 The condition to this solution is that the alternate configurations can be remotely administered in an easy way.
 This should be done in such a way that its insightful what configuration a camera is using.
@@ -81,11 +81,11 @@ In order to determine how this system should be built, a research question was f
 % history with the changes that were made. That way a template can be restored to an earlier version in case a change turns out to cause a problem.
 % Cameras will need to be registered with the system using their model number, IP-address and authentication information since there is no software system or database from which this can be queried. The system should also have the ability to detect any mismatches between a template and camera so the user knows that it needs to be updated.
 
-\subsection{Main question}
+\section{Main question}
 The main question that the project will answer is: ,,How to manage a large number of remote security cameras of different models and brands with a centralized system?"
 This question is further divided into the following sub-questions.
 
-\subsection{Subquestions}
+\section{Subquestions}
 In order to come to an answer to the main research question it has been split into the following subquestions.
 These questions will be answered using methods from the Development Oriented Triangulation (DOT) framework \cite{dot_framework}.
 \begin{enumerate}
@@ -94,7 +94,7 @@ These questions will be answered using methods from the Development Oriented Tri
 	\item How would the system architecture of a centralized parameter system be designed and implemented?
 \end{enumerate}
 
-\subsection{What parameters are of interest to BauWatch?}
+\section{What parameters are of interest to BauWatch?}
 Cameras include a lot of settings that could be relevant to BauWatch.
 It's good to know what parameters should be implemented into the prototype and what parameters are still relevant, but don't directly add value to the prototype as their implementation would be very similar to others.
 In order to determine the parameters that are relevant to BauWatch an interview was conducted on January 11th 2022 with Alex van der Leij, a product manager responsible for the video masts deployed around Europe.
@@ -123,7 +123,7 @@ In order to determine the parameters that are relevant to BauWatch an interview 
 % Idea with Wouter was to allow this to be configured inside the API.+ Not part of interview though.
 % Example map mismatch: Field of view differences between VCA and Hikvision
 % TODO Design phase not clear
-\subsubsection{Interview}
+\subsection{Interview}
 The purpose of the interview was to gain a better understanding of the problems experienced
 by the product organisation in the context of configuring cameras and to elicit requirements for the prototype. During the interview he indicated that it currently takes a lot of work to manage
 the cameras and that the current method of configuring cameras is not flexible enough which could be improved upon. He explained that the way the cameras are currently being
@@ -144,12 +144,12 @@ triggers an alarm to the dispatchers to attract their attention. It would be nic
 At the end of the interview some concerns were raised by Alex about how settings might be implemented differently by camera manufacturers. For example a sensitivity setting of 10
 on camera A might not cause the same behavior if the same value is used for camera B. A solution to this problem should be found and is described in chapter \ref{sec:design}.
 
-\subsection{How should a configuration be represented to express settings for different cameras?}
+\section{How should a configuration be represented to express settings for different cameras?}
 The camera configurations should be represented in a generic way so that they can be applied to different cameras. There also needs to be a way to detect if a camera
 has gone out of sync with the stored configuration and a way to revert configurations to previous revisions in case an erroneous setting was applied. To make this comparison the assumption is made that settings can be read back from the cameras using their APIs.
 
 %TODO: Maybe add screenshots here?
-\subsection{Available product analysis / Foreman}
+\section{Available product analysis / Foreman}
 Before the design and implementation of the product were made, an analysis on already available products was done to see if there were any existing solutions that could be used to satisfy the objective or provide a partial solution to the problem.
 During the analysis a solution was found that implemented a templating system aimed at configuring Unix-like and Windows servers.
 This solution is called Foreman.
@@ -166,7 +166,7 @@ This way the topmost host group can serve as a base level group containing gener
 The host groups that have been nested under this group will inherit its settings but also allows the administrator to provide more specific settings for that group.
 For example one could have a base level host group that defines the settings for the operating system, and nested host groups can define settings for the software running on that system.
 
-\subsection{How would the system architecture of a centralized parameter system be designed and implemented?}
+\section{How would the system architecture of a centralized parameter system be designed and implemented?}
 Once it is known how a configuration can be represented this should then be applied to the design of the prototype. This design will then be implemented into a
 prototype to demonstrate the concept using a couple of parameters that BauWatch deems relevant.
 

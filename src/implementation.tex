@@ -1,21 +1,21 @@
-\section{Implementation}
-\subsection{Development environment}
+\chapter{Implementation}
+\section{Development environment}
 BauWatch has git repository templates for commonly used programming languages. These templates contain a standardised directory structure along with configuration
 files for the Gitlab code pipelines. This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation
 generators and automatic tests.
 %TODO Maybe add something about the tools used? These are gitlab (CI), GNU Make, golang tools, Docker. Might be useful to describe testing
 
-\subsection{httprouter}
+\section{httprouter}
 I use httprouter
 
-\subsection{Parameters not in parent}
+\section{Parameters not in parent}
 Parameters can optionally be overridden by the base templates children. This is implemented using a map.
 An issue arises when in child 2 param c is added. That param is not defined in child 1 or the base template.
 How can this param be set in the first place?
 Guard against this in the model and disallow adding parameters through the webpanel.
 Additionally the base template should be initialized from some presupplied default, be it yaml or constants.
 
-\subsection{Template implementation}
+\section{Template implementation}
 Pics:
 Struct, interactions between templates
 Describe how template stacking works

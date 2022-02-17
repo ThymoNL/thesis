@@ -98,88 +98,88 @@
 \include{conclusion}
 
 % TODO: Remove this
-\section{Research methodology} \label{methods}
+\chapter{Research methodology} \label{methods}
 Research methods are used according to the  In this chapter the methods that
 will be used are described and their application will be handled in chapter \ref{activities}.
-\subsection{Library}
+\section{Library}
 Library research is done to explore what is already done and what guidelines and theories exist that could help you further your design. Since the advent of the internet library research is also called desk research.
 
-\subsubsection{Available product analysis}
+\subsection{Available product analysis}
 An available product analysis is the process of finding out if there are already existing solutions to the problem at hand.
 
-\subsubsection{Best good and bad practices}
+\subsection{Best good and bad practices}
 The best good and bad practices is a research method where work of others is investigated and a way is found to incorporate this in your own research.
 
-\subsubsection{Literature study}
+\subsection{Literature study}
 Literature study is used to gather information about a subject, determining what material to read in detail and summarising your findings.
 
-\subsubsection{Design pattern research}
+\subsection{Design pattern research}
 Design patterns are documented solutions to frequently encountered problems or challenges in software engineering; they incorporate good software engineering principles. Having good knowledge of these patterns can help improve the quality of designed software.
 
-\subsection{Workshop}
+\section{Workshop}
 Workshop research is done to explore opportunities. Prototyping, designing and co-creation activities are all ways to gain insights in what is possible and how things could work.
 
-\subsubsection{Prototyping}
+\subsection{Prototyping}
 With this domain a prototype is built to show an idea to stakeholder and to evaluate if it is worth expanding upon.
 
-\subsubsection{Requirements Prioritization}
+\subsection{Requirements Prioritization}
 This method can be used to gather requirements from stakeholders and will be used during the design phase of the project. Once the requirements have been determined a prioritization can be made so that they can be implemented based on priority.
 
-\subsubsection{IT architecture sketching}
+\subsection{IT architecture sketching}
 Come together around a whiteboard and draw the high-level architecture based upon discussion before and during the drawing process. Stay away from details, unless they are important for the overall design.
 
-\subsubsection{Unit test}
+\subsection{Unit test}
 Define one or more tests for each ‘atomic part’ of the code (e.g. a method or function). The unit should be tested in isolation.
 \newpage
 
-\section{Activities} \label{activities}
+\chapter{Activities} \label{activities}
 The project is broken down into four phases consisting of the Definition, Analysis, Design and Implementation phase. Each phase is then further broken down into
 research activities as described in section \ref{methods}.
 
-\subsection{Project definition}
-\subsubsection{Available product analysis}
+\section{Project definition}
+\subsection{Available product analysis}
 During the definition phase of the project an available product analysis was done to evaluate relevant research done in the past that may be of relevance to this
 project. During the analysis a thesis \cite{tim_k_onvif} was found that completed a lot of work that would have been done in the original scope of the project. After
 this analysis the decision was made to move the scope of the project to prevent research from unnecessarily being repeated. With the new scope in mind the analysis was
 conducted again and some solutions were found that could get and set settings from an ONVIF enabled camera but none were found that could create a generic configuration nor
 were there generic solutions for cameras not implementing ONVIF.
 
-\subsection{Analysis}
-\subsubsection{Best good and bad practices}
+\section{Analysis}
+\subsection{Best good and bad practices}
 The cameras that will be used implement multiple APIs, one more useful than the other. Before the design can be made it should be evaluated which API will be used and
 how it works. The implementation of this API can have effect on certain parts of the design in regards to the chosen programming language, interface design and
 implemented capabilities.
 
-\subsubsection{Prototyping}
+\subsection{Prototyping}
 In order to gain a better understanding of the camera APIs some very simple proof of concepts can be built to gain experience with the API. This knowledge can then be applied during the design and implementation phases.
 
-\subsection{Design}
-\subsubsection{Design pattern research}
+\section{Design}
+\subsection{Design pattern research}
 The prototype will include an interface between a generic configuration and the camera specific configurations. In order to make this interface future proof, design patterns should be researched so that the interface can be designed to be easily extended.
 
-\subsubsection{IT architecture sketching}
+\subsection{IT architecture sketching}
 During the design phase thought will be put into the architecture of the prototype. This will start with a sketch of the overall prototype and this will be refined into a functional and technical design.
 
-\subsection{Implementation}
-\subsubsection{Prototyping}
+\section{Implementation}
+\subsection{Prototyping}
 The functional and technical design will be implemented in the form of a prototype.
 
-\subsubsection{Unit test}
+\subsection{Unit test}
 To validate the operation of the prototype unit tests will be written to cover as many code paths as possible. Next to that an integration test will be done to validate
 proper functioning of the prototype. The details of this test will be formalized at a later stage in a test plan.
 
-\subsubsection{Code review}
+\subsection{Code review}
 In order to maintain the quality of the prototype, code reviews will be done on all pull requests that are to be included in the prototype. The review can be done by either the company mentor or another team member.
 \newpage
 
-\section{Project management}
+\chapter{Project management}
 The project will be conducted using Scrum. Scrum is already used within the team at BTG and it was decided that the project would use the same process to easily communicate progress and impediments to the team.
 
 Sprints will be set at two weeks and start after the sprint planning on Monday. Scrum activities will be done together with BTG's team when this makes sense. Story mapping, backlog refinement, sprint planning and the retrospective will not be integrated with the team as this would take time away from both the graduate student and the team, as their work is not directly related to each other nor would they have much to contribute to the other party during those sessions. The only persons in these meetings will be the graduate student and his mentor. Effectively this means that only the daily stand-up will be part of the team's stand-up so that the graduate student can share what he is working on and indicate if there are any impediments that the team can help resolve.
 
 BTG has a separate environment for students in their systems. This way they can keep their own backlog without mixing in with work from other teams. Next to that they also have their own place to host documentation and keep their code. In case a student needs to have access to internal resources these can be made available on an as needed basis.
 
-\section{Stakeholder analysis}
+\chapter{Stakeholder analysis}
 During the definition phase a couple of stakeholders were identified. They were identified based on the fact that the outcome of the project would have
 some sort of effect on them. Thymo is conducting the project and has the biggest stake in it. Wouter and Silke are both software engineers within the
 back-end team and after the project is finished might have to work with the resulting project. Silke in particular has indicated that he would be helped
