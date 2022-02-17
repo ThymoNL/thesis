@@ -7,7 +7,7 @@ The design will contain both functional and technical specifications containing 
 \subsection{Requirements}
 In table \ref{tab:requirements} the requirements for the system have been defined. Requirements are tracked using an identifier starting with a letter followed by a
 number and are listed in the ID column of table \ref{tab:requirements}. If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively. If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
-\begin{table}[h]
+\begin{table*}[h]
     \centering
     \begin{tabulary}{\linewidth}{CLL}
         \textbf{ID} & \textbf{Requirement} & \textbf{MoSCoW}
@@ -59,7 +59,7 @@ number and are listed in the ID column of table \ref{tab:requirements}. If the i
     \end{tabulary}
     \caption{Requirements}
     \label{tab:requirements}
-\end{table}
+\end{table*}
 
 \subsection{General design}
 At the conclusion of this project the prototype is handed over to the back-end team of BauWatch.
@@ -87,7 +87,7 @@ Templates are stored on disk with the name of the parent. When this file is relo
 parent by its name. This can be achieved using a breadth-first search of the template tree.
 The operation of loading a template and linking these to their parent is described in figure \ref{fig:inserttemplate}.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.5]{insert_template_acty}
 	\caption{Template insert operation}
@@ -101,7 +101,7 @@ Inside that directory a template is stored as a file named with the revision num
 This way the latest revision can be found by sorting the files by name in descending order.
 When a template is reverted to a previous version the files will be sorted in the same manner and will be deleted until the revision to revert to is reached. An example of how this directory structure would be stored is seen in figure \ref{fig:diskstruct}
 
-\begin{figure}[H]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.5]{yaml_dir_struct}
 	\caption{Directory structure of templates and their revisions}
@@ -121,7 +121,7 @@ Take sensitivity as an example. TBD
 The components of the system can be managed through a web interface.
 They will allow the user to create a new template and add parameters to it as seen in figure \ref{fig:templatewireframe}.
 The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system (TBD still).
-\begin{figure}[H]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.2]{wireframes}
 	\caption{Template overview  wireframe}
