@@ -10,7 +10,7 @@ Bachelor Thesis
 \thispagestyle{empty}
 \end{titlepage}
 
-\chapter{Contact information}
+\chapter*{Contact information}
 \begin{center}
 \begin{tabular}{ | m{8em} | m{8em} | m{8em} | m{11.1em} | }
 \hline
@@ -22,16 +22,13 @@ Wouter Horlings & BauWatch Technology Group & Company mentor & whorlings@bouwatc
 \\ \hline
 Peter Ebben & Saxion & Saxion mentor & p.w.g.ebben@saxion.nl
 \\ \hline
-Willem Prakken & Saxion & Graduation coordinator & w.prakken@saxion.nl
-\\ \hline
 \end{tabular}
 \end{center}
-\chapter{Acknowledgements}
+\chapter*{Acknowledgements}
 TBD
 \thispagestyle{empty}
-\chapter{Summary}
+\chapter*{Summary}
 This will be written at the end, max 1 page.
-TBD: Remove chapter number
 \thispagestyle{empty}
 
 \thispagestyle{empty}
@@ -39,15 +36,17 @@ TBD: Remove chapter number
 \thispagestyle{empty}
 
 \chapter{Introduction}
+
+\section{Context}
 BauWatch is a security system supplier that develops and operates temporary video surveillance and access control systems for use at construction sites and other remote locations.
 One of their most popular products are the video masts (called a "BauWatch"), a portable, self-contained, metal enclosure including an internal
 power source, network connectivity and a telescopic mast with cameras, green floodlights and other peripherals. A BauWatch can be lifted by a forklift and
 easily transported to the next location. Research \& Development for these products is done by BauWatch Technology Group (BTG) located in Enschede.
 
-\chapter{Company history}
-FIGO was created in 2007 as a product line of the Twente Institute for Wireless and Mobile Communications (TI-WMC). The name FIGO comes from the Italian word meaning:
-fig, cool, tasteful, sexy.
-They used to focus on network equipment but now also handle the cameras in the video masts
+\section{Company history}
+BauWatch Technology Group originated under the name FIGO. FIGO was created in 2007 as a product line of the Twente Institute for Wireless and Mobile Communications (TI-WMC). The name FIGO comes from the Italian word meaning:
+fig, cool, tasteful, or sexy.
+They used to focus on network equipment but now also handle the cameras in the video masts.
 In 2018 they were acquired by BauWatch to form their R\&D department under the name BauWatch Technology Group.
 BauWatch has a backend team under which I do my research.
 
@@ -58,8 +57,81 @@ In 2011 FIGO was split-off to be a sister organization to TI-WMC focusing on the
 continued alone at a new location where it still is today. The years after the split, FIGO did various contracted projects like Sensor City Assen, Bad Boys Buster with
 Luminoxx, and BauWatch. After various projects with BauWatch, they acquired FIGO in 2018 to become its dedicated R\&D department after which it no longer focused solely on networking equipment but also doing more work with the cameras and Network Video Recorders (NVR) used by BauWatch.
 
+\section{Problem statement}
+% Er zijn teveel handelingen/ om een camera te configuren.
+% Momenteel is er geen inzicht/controle over welke versie van een configuratie een camera heeft.
+% Daardoor mogen een aantal instellingen niet zomaar aangepast worden als dit voor een situatie wenselijk is.
+% Versiebeheer
 
-\chapter{Scope}
+% At the moment BauWatch does not have a system to remotely administer its cameras. This makes it difficult to gain insight into the current state of the cameras and make an adjustment to a range of cameras to make a correction. Because of this BauWatch is forced to forbid changes to settings even though making a change to a setting is sometimes desired.
+
+
+% At the moment BauWatch does not have an efficient method to remotely configure its cameras. The current way of working is to configure a camera in a
+% certain way with a group of "base settings". These settings are then exported to a configuration file that can be imported to the other cameras.
+% When these settings need to be changed, a new configuration file can be made with the desired changes. Because these configuration files do not
+% carry any
+% information about versioning or changes, it is very hard to keep track of which configuration a camera is using. 
+
+% For example, it could be desired to let the camera at a certain location be more sensitive to movement in order to trigger an alarm. In order to do this the alarm sensitivity
+% setting would need to be altered to best suit that location. A problem arises when the camera is moved to a new location where there is more
+% movement. This would cause an excessive amount of alarms to be generated, meaning an increased workload for the dispatchers. In order to avoid this problem, settings like this are fixed to a certain value to prevent excessive alarms but still be sensitive enough to cause detection.
+
+%%%%%%%
+
+% BauWatch wants to be able to remotely configure cameras in an efficient manner. This way they can have greater flexibility with the parameters being used
+% by the cameras, so they can quickly make adjustments when required. An example of an adjustment could be to change the cameras alarm sensitivity to movement. Right now there is no way to easily administer these settings across these cameras. Without a way to administer this a camera might not work properly if it is moved to
+% a location it wasn't configured for. In order to avoid this problem, settings are set to a default value which have been agreed to not be changed to optimize performance. These settings are distributed through the proprietary configuration backups from a camera. This makes it hard to keep track of which version of the configuration is being used.
+BauWatch has more than 10,000 cameras deployed on its videos masts throughout Europe. At the moment there is no adequate method to manage these cameras.
+Without a proper management solution it is impossible to get a overview of what configuration a camera is using.
+The current workflow is to configure the cameras once after delivery from the manufacturer.
+After this initial configuration the configuration is not allowed to be changed.
+
+Nevertheless there still are situations where an alternate configuration is desired as it increases the surveillance quality.
+In some situations this alternate configuration is applied eventhough this goes against the established workflow.
+When a camera is moved to a different location there is no method to verify if a configuration has been altered or not.
+Therefore a camera with an alternative configuration can be moved to a different location without restoring the configuration to its original state.
+This causes the camera to no longer operate as expected.
+
+
+\section{Objective}
+BauWatch wants to find a solution which makes it possible to manage camera configurations.
+The condition to this solution is that the alternate configurations can be remotely administered in an easy way.
+This should be done in such a way that its insightful what configuration a camera is using.
+The objective is to build a prototype of a software system that is able to configure the cameras to a predefined set of parameters while still allowing
+more fine grained control for a specific subset of those cameras.
+
+In order to determine how this system should be built, a research question was formulated and divided in subquestions. They will be described in the next section.
+
+% De wens van BauWatch is om het mogelijk te maken om alternatieve configuraties te gebruiken wanneer deze de kwaliteit van de bewaking te verbeteren. Onder de voorwaarde dat het mogelijk om deze alternatieve configuraties te kunnen beheren.
+% Hierbij kan gedacht worden aan het bijo
+% Dit moet gedaan worden op een manier dat het wel inzichtelijk blijft welke camera over welke configuratie beschikt.
+
+% Onderzoek hoe een camera geconfigureerd kan worden op basis van een template zodat deze centraal uitgerold kan worden en er detectie mogelijk is op het moment dat een camera niet meer aan het template voldoet. Verder is het belangrijk dat er een vorm van versiebeheer aan deze configuraties kan worden verbonden zodat alle (of een subselectie) van camera's teruggezet kunnen worden naar een eerder versie van een template indien blijkt dat er een wijziging is gemaakt die problemen geeft.
+
+% BauWatch wants to find a solution to this problem so that cameras can be remotely configured from a predefined template while also allowing specific parameters to be overridden for individual cameras.
+% To solve this problem a software system will be developed that allows the user to create a template that can be
+% applied to a video mast. This template can be modified by the user by interacting with a central server through a
+% web interface. Templates can be stacked in multiple layers such that a user can make a descendant template for a specific
+% situation. After the user applies the template to a range of cameras, the central server will convert this template to a set of API commands understood by each camera and will then push those commands to those devices. In addition to
+% these templates, the system should have the capability
+% to track who made a change to a template by keeping a revision
+% history with the changes that were made. That way a template can be restored to an earlier version in case a change turns out to cause a problem.
+% Cameras will need to be registered with the system using their model number, IP-address and authentication information since there is no software system or database from which this can be queried. The system should also have the ability to detect any mismatches between a template and camera so the user knows that it needs to be updated.
+
+\section{Main question}
+The main question that the project will answer is: ,,How to manage a large number of remote security cameras of different models and brands with a centralized system?"
+This question is further divided into the following sub-questions.
+
+\section{Subquestions}
+In order to come to an answer to the main research question it has been split into the following subquestions.
+These questions will be answered using methods from the Development Oriented Triangulation (DOT) framework \cite{noauthor_dot_nodate}.
+\begin{enumerate}
+	\item What parameters are of interest to BauWatch?
+	\item How should a configuration be represented to express settings for different cameras?
+	\item How would the system architecture of a centralized parameter system be designed and implemented?
+\end{enumerate}
+
+\section{Scope}
 % The project has commence on 15-11-2021 and will be completed by 22-04-2022. The scope of the project will be limited to the configuration of cameras through their APIs only. No modifications 
 % will be done to the firmware of cameras and no special consideration is given to BauWatch' network architecture other than the cameras being reachable on a unique IP-address. Furthermore the focus of the prototype will be with the manufacture API instead of ONVIF. ONVIF will only be used
 % in the specific case a part of the manufacturer API is found not to be working properly or if implementing a call to the API would cause an unacceptable delay.

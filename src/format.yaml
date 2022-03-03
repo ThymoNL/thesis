@@ -1,12 +1,12 @@
 ---
-revision:
-  author: "John Doe" # Who authored this revision?
-  timestamp: 0 # Unix timestamp of revision
+name: "some_template"
 parent: "base" # Name
 parameters:
-  - IntegerParameter:
-      name: "timezone"
-      value: 2
-  - IntegerParameter:
-      name: "sensitivity"
-      value: 10
+  - type: IntegerParameter
+    name: "timezone"
+    attributes:
+        value: 1
+  - type: SomeOtherParameter
+    name: "sensitivity"
+    attributes:
+        stringdata: "Hello"
