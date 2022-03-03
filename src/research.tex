@@ -1,41 +1,3 @@
-\chapter{Research}
-Before the prototype could be implemented some research had to be conducted. This chapter will explain the problem statement and discuss the results.
-
-\section{Problem statement}
-% Er zijn teveel handelingen/ om een camera te configuren.
-% Momenteel is er geen inzicht/controle over welke versie van een configuratie een camera heeft.
-% Daardoor mogen een aantal instellingen niet zomaar aangepast worden als dit voor een situatie wenselijk is.
-% Versiebeheer
-
-% At the moment BauWatch does not have a system to remotely administer its cameras. This makes it difficult to gain insight into the current state of the cameras and make an adjustment to a range of cameras to make a correction. Because of this BauWatch is forced to forbid changes to settings even though making a change to a setting is sometimes desired.
-
-
-% At the moment BauWatch does not have an efficient method to remotely configure its cameras. The current way of working is to configure a camera in a
-% certain way with a group of "base settings". These settings are then exported to a configuration file that can be imported to the other cameras.
-% When these settings need to be changed, a new configuration file can be made with the desired changes. Because these configuration files do not
-% carry any
-% information about versioning or changes, it is very hard to keep track of which configuration a camera is using. 
-
-% For example, it could be desired to let the camera at a certain location be more sensitive to movement in order to trigger an alarm. In order to do this the alarm sensitivity
-% setting would need to be altered to best suit that location. A problem arises when the camera is moved to a new location where there is more
-% movement. This would cause an excessive amount of alarms to be generated, meaning an increased workload for the dispatchers. In order to avoid this problem, settings like this are fixed to a certain value to prevent excessive alarms but still be sensitive enough to cause detection.
-
-%%%%%%%
-
-% BauWatch wants to be able to remotely configure cameras in an efficient manner. This way they can have greater flexibility with the parameters being used
-% by the cameras, so they can quickly make adjustments when required. An example of an adjustment could be to change the cameras alarm sensitivity to movement. Right now there is no way to easily administer these settings across these cameras. Without a way to administer this a camera might not work properly if it is moved to
-% a location it wasn't configured for. In order to avoid this problem, settings are set to a default value which have been agreed to not be changed to optimize performance. These settings are distributed through the proprietary configuration backups from a camera. This makes it hard to keep track of which version of the configuration is being used.
-BauWatch has more than 10,000 cameras deployed on its videos masts throughout Europe. At the moment there is no adequate method to manage these cameras.
-Without a proper management solution it is impossible to get a overview of what configuration a camera is using.
-The current workflow is to configure the cameras once after delivery from the manufacturer.
-After this initial configuration the configuration is not allowed to be changed.
-
-Nevertheless there still are situations where an alternate configuration is desired as it increases the surveillance quality.
-In some situations this alternate configuration is applied eventhough this goes against the established workflow.
-When a camera is moved to a different location there is no method to verify if a configuration has been altered or not.
-Therefore a camera with an alternative configuration can be moved to a different location without restoring the configuration to its original state.
-This causes the camera to no longer operate as expected.
-
 % Bauwatch heeft verspreid door EU meer dan 10k cameras in het veld. Momenteel is er geen toereikende methode om al deze cameras te beheren.
 % Zonder een toereikende beheeroplossing is het niet mogelijk om een goed overzicht te houden van welke camera over welke instellingen beschikt.
 % De huidige werkwijze is om de camera's vanuit de fabriek eenmaal met de juiste instellingen te configureren.
@@ -51,120 +13,12 @@ This causes the camera to no longer operate as expected.
 % How does it work now?
 % 
 
-\section{Previous Work (TODO: Is this a logical place?)}
-BTG already did some experimentation to better automate equipment configuration by creating some scripts that replayed API commands but this is still
-in a very rudimentary state. Each time a setting needed to be applied to a large amount of cameras, a request would be made to an engineer who would then craft a script
-specifically for that situation.
 
-\section{Objective}
-BauWatch wants to find a solution which makes it possible to manage camera configurations.
-The condition to this solution is that the alternate configurations can be remotely administered in an easy way.
-This should be done in such a way that its insightful what configuration a camera is using.
-The objective is to build a prototype of a software system that is able to configure the cameras to a predefined set of parameters while still allowing
-more fine grained control for a specific subset of those cameras.
-
-In order to determine how this system should be built, a research question was formulated and divided in subquestions. They will be described in the next section.
-
-% De wens van BauWatch is om het mogelijk te maken om alternatieve configuraties te gebruiken wanneer deze de kwaliteit van de bewaking te verbeteren. Onder de voorwaarde dat het mogelijk om deze alternatieve configuraties te kunnen beheren.
-% Hierbij kan gedacht worden aan het bijo
-% Dit moet gedaan worden op een manier dat het wel inzichtelijk blijft welke camera over welke configuratie beschikt.
-
-% Onderzoek hoe een camera geconfigureerd kan worden op basis van een template zodat deze centraal uitgerold kan worden en er detectie mogelijk is op het moment dat een camera niet meer aan het template voldoet. Verder is het belangrijk dat er een vorm van versiebeheer aan deze configuraties kan worden verbonden zodat alle (of een subselectie) van camera's teruggezet kunnen worden naar een eerder versie van een template indien blijkt dat er een wijziging is gemaakt die problemen geeft.
-
-% BauWatch wants to find a solution to this problem so that cameras can be remotely configured from a predefined template while also allowing specific parameters to be overridden for individual cameras.
-% To solve this problem a software system will be developed that allows the user to create a template that can be
-% applied to a video mast. This template can be modified by the user by interacting with a central server through a
-% web interface. Templates can be stacked in multiple layers such that a user can make a descendant template for a specific
-% situation. After the user applies the template to a range of cameras, the central server will convert this template to a set of API commands understood by each camera and will then push those commands to those devices. In addition to
-% these templates, the system should have the capability
-% to track who made a change to a template by keeping a revision
-% history with the changes that were made. That way a template can be restored to an earlier version in case a change turns out to cause a problem.
-% Cameras will need to be registered with the system using their model number, IP-address and authentication information since there is no software system or database from which this can be queried. The system should also have the ability to detect any mismatches between a template and camera so the user knows that it needs to be updated.
-
-\section{Main question}
-The main question that the project will answer is: ,,How to manage a large number of remote security cameras of different models and brands with a centralized system?"
-This question is further divided into the following sub-questions.
-
-\section{Subquestions}
-In order to come to an answer to the main research question it has been split into the following subquestions.
-These questions will be answered using methods from the Development Oriented Triangulation (DOT) framework \cite{noauthor_dot_nodate}.
-\begin{enumerate}
-	\item What parameters are of interest to BauWatch?
-	\item How should a configuration be represented to express settings for different cameras?
-	\item How would the system architecture of a centralized parameter system be designed and implemented?
-\end{enumerate}
 
 \section{What parameters are of interest to BauWatch?}
 Cameras include a lot of settings that could be relevant to BauWatch.
 It's good to know what parameters should be implemented into the prototype and what parameters are still relevant, but don't directly add value to the prototype as their implementation would be very similar to others.
 In order to determine the parameters that are relevant to BauWatch an interview was conducted on January 11th 2022 with Alex van der Leij, a product manager responsible for the video masts deployed around Europe.
-
-%%% Interview with Alex, where to put this?
-
-% TODO: Add reference to chapter explaining solution!!!
-
-% Indicated that:
-% Takes a lot of work to manage cameras
-% The ability/flexibility to configure cameras is not sufficient
-% Improvements can be made
-% Its difficult to maintain an overview of what templates are being used
-% There is not version control
-% Current tooling can not work with batches
-% Rec: Look at Hikvision Batch Configuration
-
-% What parameters could be relevant?
-% Autofocus/zoom
-% Video settings (e.g. Bitrate)
-% Netwerk settings (suggested, but out of scope)
-% Detection sensitivity, to limit alarms sent to the dispatches
-% Would be nice to have the ability to quickly change these (overnight) to balance alarm frequency and flase alarms
-
-% Concern about mapping settings between cameras
-% Idea with Wouter was to allow this to be configured inside the API.+ Not part of interview though.
-% Example map mismatch: Field of view differences between VCA and Hikvision
-% TODO Design phase not clear
-\subsection{Interview}
-The purpose of the interview was to gain a better understanding of the problems experienced
-by the product organisation in the context of configuring cameras and to elicit requirements for the prototype. During the interview he indicated that it currently takes a lot of work to manage
-the cameras and that the current method of configuring cameras is not flexible enough which could be improved upon. He explained that the way the cameras are currently being
-administered is to configure a camera with a set of default settings which are to be considered a set of 'base settings'. These can then be exported to a file which is used as a
-'template' for other
-cameras. A downside of this approach is that it is difficult to maintain different versions of these files and that it can't easily be determined what version a camera is using.
-Another problem he indicated was that current tooling does not provide a practical way to make a single change to a batch of cameras.
-
-
-After introducing the goal of the project the question was asked as to what parameters he would find valuable to have in the initial prototype.
-The parameters that were named as candidates were: automatic camera focus and zoom, video quality, network configuration and detection sensitivity.
-Out of these parameters some of them were of particular interest to him. The first one being video quality. It would be nice to configure video quality related settings like a
-cameras bitrate and resolution because video masts may be in locations with reduced cellular network connectivity. In that case it would be beneficial to lower the video quality
-for these cameras to reduce network load. The second parameter of interest was detection sensitivity. This parameter regulates how sensitive a camera is to movement before it
-triggers an alarm to the dispatchers to attract their attention. It would be nice to quickly change this parameter so that the frequency of alarms and false alarms can be balanced.
-
-
-At the end of the interview some concerns were raised by Alex about how settings might be implemented differently by camera manufacturers. For example a sensitivity setting of 10
-on camera A might not cause the same behavior if the same value is used for camera B. A solution to this problem should be found and is described in chapter \ref{sec:design}.
-
-\section{How should a configuration be represented to express settings for different cameras?}
-The camera configurations should be represented in a generic way so that they can be applied to different cameras. There also needs to be a way to detect if a camera
-has gone out of sync with the stored configuration and a way to revert configurations to previous revisions in case an erroneous setting was applied. To make this comparison the assumption is made that settings can be read back from the cameras using their APIs.
-
-%TODO: Maybe add screenshots here?
-\section{Available product analysis / Foreman}
-Before the design and implementation of the product were made, an analysis on already available products was done to see if there were any existing solutions that could be used to satisfy the objective or provide a partial solution to the problem.
-During the analysis a solution was found that implemented a templating system aimed at configuring Unix-like and Windows servers.
-This solution is called Foreman.
-
-
-,,Foreman is an open source project that helps system administrators manage servers throughout their lifecycle, from provisioning and configuration to orchestration and monitoring." \cite{noauthor_foreman_nodate}
-The project gives the administrator the ability to automate repetitive tasks by supportingan interface with common configuration mannagement solutions like Puppet, Ansible, Chef and Salt.
-
-In addition to being a frontend to these configuration management solutions Foreman also provides a host management system known as ,,Host Groups" \cite{noauthor_foreman_nodate-1}. In this context a host is any Linux client that Foreman manages.
-A host group functions as a template for common host settings.
-Hosts that have been assigned to a host group inherit any settings that have been defined in that group.
-Host groups can also be nested into a hierarchy.
-This way the topmost host group can serve as a base level group containing general settings for all hosts.
-The host groups that have been nested under this group will inherit its settings but also allows the administrator to provide more specific settings for that group.
-For example one could have a base level host group that defines the settings for the operating system, and nested host groups can define settings for the software running on that system.
 
 \section{How would the system architecture of a centralized parameter system be designed and implemented?}
 Once it is known how a configuration can be represented this should then be applied to the design of the prototype. This design will then be implemented into a
