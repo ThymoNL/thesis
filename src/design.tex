@@ -16,26 +16,24 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
         \\ \hline %% Check this with NF-7
         B1 & A camera can be configured by the user without detailed knowledge about the model being used & Must
         \\ \hline
-        B2 & A camera can be rolled back to a previous configuration & Must
+        B2 & A camera configuration can be rolled back to any compatible version in history & Must
         \\ \hline
-        B3 & It should be known who last changed a template and at what time & Must
+        B3 & The configuration changes must include auditing: show the author and timestamp & Must
         \\ \hline
         B4 & Translated parameters that are scaled to a particular value should be tuneable & Should
         \\ \hline
-        B5 & A camera can be queried to verify if it still configured according to its template & Must
+        B5 & The application has the option to show the user the differences between the config in the camera and the template & Must
     %%% User requirements
         \\ \hline
         U1 & A user can login using a username \& password & Could
         \\ \hline
-        U2 & A user can change his password through the web interface & Could
+        U2 & A user can change his credentials through the web interface & Could
         \\ \hline
-        U3 & A user can configure a NTP server in a template & Should
+        U3 & The template used for configuring cameras must include one setting representing a text-field and one setting representing a slider value & Should
         \\ \hline
-        U4 & A user can configure the motion detection sensitivity in a template & Must
+        U4 & New settings can be added to the application without having to change the templates & Must
         \\ \hline
-        U5 & A user can configure video quality in a template & Should
-        \\ \hline
-        U6 & A template can contain a parameter that is not present in any of its parents & Should
+        U6 & The application must be able to handle one or more settings in a template that are not present in any of its parents & Should
         \\ \hline
         U7 & A user can interface with the system using a webbrowser & Should
         \\ \hline
@@ -46,17 +44,21 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
         \\ \hline
         NF-1 & Communication with cameras are authenticated through HTTP Basic or Digest & Must
         \\ \hline
-        NF-2 & The system shall be implemented in Go & Must
+        NF-2 & The code must be compiled crossplatform & Must
+        \\ \hline
+        NF-3 & The codebase must be covered with linting. & Must
+        \\ \hline
+        NF-3 & The codebase shall be strongly typed. & Should
         \\ \hline
         NF-3 & All code shall be covered by unit tests & Must
         \\ \hline
-        NF-4 & Templates and camera configuration can be stored on disk using YAML files & Must
+        NF-4 & Templates and camera configuration are stored on disk in a human-readable/typeable format & Must
         \\ \hline
         NF-5 & Templates and camera configuration can be loaded from YAML files & Must
         \\ \hline %% TODO check this with Wouter. Not SMART
-        NF-6 & All newly created APIs shall be documented using OpenAPI & Should
+        NF-6 & The application should be exposed as a RestAPI and documented via OpenAPI & Should
         \\ \hline
-        NF-7 & Camera configurations shall be represented in a generic way so that they can be applied to different cameras. & Must
+        NF-7 & The templates must be camera independent. & Must
     \end{tabulary}
     \caption{Requirements}
     \label{tab:requirements}
