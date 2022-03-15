@@ -1,16 +1,15 @@
 \chapter{Research}
 
-\section{Previous Work}
-Some experimentation was already done by BTG before the start of the project that to automate the manual process of configuring a camera.
-This only goes as far as writing a script for a specific situation that makes an API call for a specific setting so multiple cameras can be changed in one go.
+\section{Previous work}
+Some experimentation was already done by BTG before the start of the project that attempted to automate the manual process of configuring a camera.
+This only goes as far as writing a script for a specific situation that makes an API call for a specific setting so multiple cameras of the same type can be changed in one go.
 While this makes it a little less time consuming to change a setting across all cameras this does not solve the problem of the lack of an overview of the current configuration nor is it user-friendly requiring an engineer to write a script each time a setting needs to be changed.
 
 \section{Focus group}
 To better define what the project deliverables would be, a focus group was formed consisting of the graduate student and  Wouter Horlings and Silke Hofstra, who are software engineers at BTG.
-During the group sessions it was determined that a system should be implemented capable of configuring a camera in such a way that the configuration does not explicitly specify which type of camera is being configured.
+During the group sessions it was determined that a system should be implemented capable of configuring a camera in such a way that the configuration does not explicitly need to specify what model of camera is being configured.
+This could be done by separating the configuration parameters into generic options and letting the camera specific configuration code determine what options are needed for that particular camera to configure it according to those options.
 The focus group also determined that it is desired to be able to rollback a camera configuration using some sort of version control system in case a change to the configuration presented problems.
-
-% TODO: Add reference to chapter explaining solution!!!
 
 % Indicated that:
 % Takes a lot of work to manage cameras
@@ -57,7 +56,6 @@ on camera A might not cause the same behavior if the same value is used for came
 %The camera configurations should be represented in a generic way so that they can be applied to different cameras. There also needs to be a way to detect if a camera
 %has gone out of sync with the stored configuration and a way to revert configurations to previous revisions in case an erroneous setting was applied. To make this comparison the assumption is made that settings can be read back from the cameras using their APIs.
 
-%TODO: Maybe add screenshots here?
 \section{Available product analysis}
 Before the design and implementation of the product were made, an analysis on already available products was done to see if there were any existing solutions that could be used to satisfy the objective or provide a partial solution to the problem.
 During the analysis no solutions were found that directly addressed the problem of configuring a large amount of cameras in a generic way.
@@ -89,7 +87,7 @@ To determine the best way to implement this a couple of option were evaluated.
 \subsection{One file per revision}
 The first option that was evaluated was to use one file per template revision.
 Using this method templates would be stored in a directory named after the template.
-Inside that directory a template is stored as a file named with the revision number and the file extension (.yml).
+Inside that directory a template is stored as a file named with the revision number and the file extension.
 This way the latest revision can be found by sorting the files by name in descending order.
 When a template is reverted to a previous version the files will be sorted in the same manner and will be deleted until the revision to be reverted to is reached. An example of how this directory structure would be stored is seen in figure \ref{fig:diskstruct}
 

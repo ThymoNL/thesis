@@ -1,7 +1,7 @@
 \documentclass[11pt,a4paper,nomath,nopackage]{siltex-report}
 \usepackage{amsmath}
 \usepackage[nomath]{siltex}
-\usepackage[language=nl]{bauwatchtitle}
+\usepackage[language=int]{bauwatchtitle}
 \usepackage{graphics}
 \usepackage{pdflscape}
 \usepackage{multirow}
@@ -10,7 +10,7 @@
 \usepackage{listings}
 \usepackage[acronym]{glossaries}
 \usepackage[style=ieee]{biblatex}
-%\usepackage[hidelinks]{hyperref}
+%\usepackage[s]{hyperref}
 
 \usepackage{zref-savepos}
 
@@ -85,6 +85,10 @@
   }%
 }
 
+\DefineBibliographyStrings{english}{%
+	bibliography = {References},
+}
+
 \hyphenation{Bau-Watch}
 
 %%%%%%%%%%%%% Content below %%%%%%%%%%%%%
@@ -102,7 +106,8 @@
 \include{implementation}
 \include{testing}
 \include{conclusion}
-\include{appendix}
+\printbibliography[heading=bibintoc]
+%\include{appendix}
 
 % TODO: Remove this
 %\chapter{Research methodology} \label{methods}
@@ -233,6 +238,5 @@
 %    % International Institute of Business Analysis. 2009. ISBN 978-0-9811292-1-1
 %\end{thebibliography}
 
-\printbibliography
 
 \end{document}

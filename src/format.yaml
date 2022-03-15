@@ -6,7 +6,14 @@ parameters:
     name: "timezone"
     attributes:
         value: 1
-  - type: SomeOtherParameter
+  - type: StringParameter
+    name: "ntpserver"
+    attributes:
+        stringdata: "pool.ntp.org"
+  - type: LevelParameter
     name: "sensitivity"
     attributes:
-        stringdata: "Hello"
+        level: "high"
+        low: 10
+        medium: 50
+        high: 80

@@ -1,12 +1,18 @@
 \chapter{Implementation}
 \section{Development environment}
-BauWatch has git repository templates for commonly used programming languages. These templates contain a standardized directory structure along with configuration
-files for the Gitlab code pipelines. This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation
-generators and automatic tests.
+BauWatch has git repository templates for commonly used programming languages.
+These templates contain a standardized directory structure along with configuration files for the Gitlab code pipelines.
+This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation generators and automatic tests.
+
+\subsection{Continuous Integration}
+By default all repositories are set up to check all code submitted as a merge request complies with a set of merge checks.
+First of all the continuous integration environment checks if the code successully compiles and passes its checks.
+After that the commits are checked to verify they refer to the Jira story the feature branch is associated with and if a changelog file describing the changes for that story is present.
+If all checks pass the merge request will be marked with a green check mark indicating it is ready to be reviewed by someone.
+Once all review comments have been resolved and the reviewer approves the changes they can be merged back into the master branch by someone with maintainer permissions for that repository.
+
 %TODO Maybe add something about the tools used? These are gitlab (CI), GNU Make, golang tools, Docker. Might be useful to describe testing
 
-\section{httprouter}
-I use httprouter
 
 %\section{Parameters not in parent}
 %Parameters can optionally be overridden by the base templates children. This is implemented using a map.
