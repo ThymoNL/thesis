@@ -4,6 +4,13 @@ BauWatch has git repository templates for commonly used programming languages.
 These templates contain a standardized directory structure along with configuration files for the Gitlab code pipelines.
 This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation generators and automatic tests.
 
+\section{Modules}
+Module based programming worth describing?
+Maybe interesting to describe the source layout?
+Built using Makefile
+
+The application is divided into three modules and one main file.
+
 \subsection{Continuous Integration}
 By default all repositories are set up to check all code submitted as a merge request complies with a set of merge checks.
 First of all the continuous integration environment checks if the code successully compiles and passes its checks.
@@ -25,3 +32,35 @@ Once all review comments have been resolved and the reviewer approves the change
 Pics:
 Struct, interactions between templates
 Describe how template stacking works
+
+\section{Using the system}
+The system can be used from the commandline using the following commands:
+\begin{enumerate}
+\item help: List the available commands
+\item exit: Exit the program
+\item quit: Alias for exit
+\item camera: Configure a camera
+\item template: Configure a template
+\item save: Save a template revision
+\item load: Load a template from disk
+\item compare: Check if a camera is configured according to its template and if not show the differences
+\item configure: Configure a camera using the template that has been assigned to it
+\end{enumerate}
+
+TODO Show how to do each step.
+
+\section{Saving}
+A lot of time was initially spent implementing the template save and loading functionality.
+First an attempt was done using polymorphism of yaml. However this proved problematic as during unmarshaling the librarby did not know what to instantiate.
+After trying to fix this a different approach was taken that ended up being a lot simpler.
+
+\section{Loading}
+When a load instruction is given to the system a call is done to LoadTemplate with the name of the template to be loaded.
+This function loads the requested template and all other templates needed to satisfy its parents.
+If a template could not be found this function will return nothing and the program will print an informational message that the template could not be loaded.
+If the template depends on a parent template and this template could not be found an error condition is reported.
+This is done because the program only allows a template deletion when it does not have any other templates that depend on it.
+Thus this condition can only if the templates stored on disk were corrupted or modified outside the program.
+To limit the scope of the prototype this condition can not be recovered from and has to be manually resolved by removing the affected templates or editing the YAML files to get them back in the proper state.
+
+\section{Test coverage/Test suite}

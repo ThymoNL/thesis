@@ -1,25 +1,35 @@
 \chapter{Design}
 \label{sec:design}
 In this chapter the design for the Camera Provisioning system will be laid out.
-The goal of the system is to provide a solution which makes it possible to manage camera configurations.
+The goal of the system is to provide a solution which makes it possible to manage the configuration of cameras.
 The system allows the user to orchestrate parameters into different templates which can be assigned to a camera.
-The design will contain both functional and technical specifications containing the descriptions of different components, requirements and supplemental diagrams and wireframes.
+The design contains both functional and technical specifications containing the descriptions of different components, requirements and supplemental diagrams and wireframes.
+Before further introducing the design two important disticions need to be made.
+A \textit{template} refers to a set of data containing the parameters a camera should be configured with.
+A \textit{camera configuration} refers to the information that is required to interface with a camera such as its hostname and login credentials.
+
 \section{Requirements}
-In table \ref{tab:requirements} the requirements for the system have been defined. Requirements are tracked using an identifier starting with a letter followed by a
-number and are listed in the ID column of table \ref{tab:requirements}. If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively. If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
+In table \ref{tab:requirements} the requirements for the system have been defined.
+These requirements have been collected by discussing with the developers from the focus group and conducting an interview with a product manager during the analysis phase.
+When deemed necessary the requirements have been finetuned during the development of the prototype, after consulting with the stakeholders, to better explain their goal or when a better solution was found that did not comply with the initial formulation of that requirement.
+
+The requirements are tracked using an identifier starting with a letter followed by a number and are listed in the ID column of table \ref{tab:requirements}.
+If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively.
+If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
 Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow_nodate}.
+
 \begin{table*}[h]
     \centering
     \begin{tabulary}{\linewidth}{CLL}
         \textbf{ID} & \textbf{Requirement} & \textbf{MoSCoW}
     %%% Business requirements
-        \\ \hline %% Check this with NF-7
+        \\ \hline
         B1 & A camera can be configured by the user without detailed technical knowledge about the model being used & Must
         \\ \hline
 		% TODO: When is a rev incompatible?
         B2 & A camera configuration can be rolled back to any compatible version in history & Must
         \\ \hline
-        B3 & The configuration changes must include auditing: show the author and timestamp & Must
+        B3 & The configuration changes must include auditing showing at least the author and timestamp & Must
         \\ \hline
         B4 & Parameters whose values behave differently across brands shall be scaled by an adjustable factor for each brand & Should
         \\ \hline
@@ -63,7 +73,7 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 		\\ \hline
 		NF8 & The application can be used interactively & Must
         \\ \hline
-        NF9 & The templates must be camera independent. & Must
+        NF9 & The templates must be camera independent & Must
     \end{tabulary}
     \caption{Requirements}
     \label{tab:requirements}
@@ -71,7 +81,7 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 
 % TODO: Maybe this fits better in implementation since it goes into programming lanuguage, linting etc.
 \section{General design}
-At the conclusion of this project the prototype is handed over to the back-end team of BauWatch.
+At the conclusion of this project the prototype is handed over to the back-end team of BTG.
 Since they will be further developing the prototype into a production ready system the choice was made to implement the system in Go as that programming language is their preferred language for new products fulfilling requirement NF-2.
 
 \section{Templates}
@@ -80,6 +90,16 @@ A template in the context of this system is a collection of lists containing cam
 Templates can be built up from different layers where each layer can override parameters from the layer above.
 This allows the user to define a template that is shared by a large amount of cameras but still allows fine-grained control over a smaller subset when this is desired.
 These cameras would still use all the settings from the parent template but would have a different setting for the parameter being overridden.
+
+
+The parameters within a template may or may not be used by the camera configuration API.
+It is up to the programmer to decide what parameters a configuration should or should not support.
+For example, given two cameras of which one supports motion detection and the other does not supporting motion detection of any kind.
+In this case it is known by the camera configuration component that the camera supports motion detection and it shall look for paramaters that define motion detection settings
+\footnote{One should note that within the scope of this prototype only the motion detection sensitivity paramater has been implemented but in a production implementation there will be more.}.
+The camera configration component also knows that the other camera does not support motion detection and hence will not look in the template for parameters describing motion detection but will limit itself to parameters relevant to that camera.
+This allows the template to describe paramaters for multiple types of devices and leaving the responsibility of determining what parameters to use or not use to the components that know how to configure that particular device.
+In the future this could also be used to extend the template with parameters for devices other than cameras, provided the system is changed to support the configuration of such devices.
 
 \section{Datastructure}
 Templates are represented in memory as a tree using dynamically allocated nodes that have pointers to one parent and zero or more children.
@@ -102,9 +122,16 @@ Parameters A and C can be enumerated instantly since they are defined in Child2 
 \end{marginfigure}
 The best-case performance for a parameter lookup is O(1) in the case the parameter is already defined in the current template.
 The worst-case performance of a lookup is O(n) where n is the number of templates to be traversed from the current node to the root node.
+
 When a new template is instantiated, by creating a new one or loading one from YAML, that template has to be inserted at the correct place inside the tree.
-The way this is achieved is to do a breadth-first search (BFS) in the tree where a match is identified using the name of the parent node.
-Using BFS to find the parent node is more efficient than a depth-first search (DFS) as a template is more likely to inherit from a more generic template describing e.g. parameters for a country than a more specific template representing parameters for a specific building site. % TODO Proof?
+The way this is achieved is to do a breadth-first search (BFS) (Figure \ref{fig:bfs}) in the tree where a match is identified using the name of the parent node.
+Using BFS to find the parent node is more efficient than a depth-first search (DFS) as a template is more likely to inherit from a more generic template describing e.g. parameters for a country than a more specific template representing parameters for a specific building site.
+\begin{marginfigure}
+	\centering
+	\includesvg{Sorted_binary_tree_breadth-first_traversal}
+	\caption{Sorted binary tree with first nine letters of alphabet, showing inorder traversal\cite{pluke_sorted_2010}}
+	\label{fig:bfs}
+\end{marginfigure}
 
 \section{Multiple base templates} %TODO: Root template requires more intro?
 While this design requires a single root template that all other templates inherit from, the design still allows the creation of multiple trees with independent parameter sets as can be seen in figure \ref{fig:multiple_root}.
@@ -163,9 +190,23 @@ The following data is used to describe a template in YAML:
 
 \section{Reading from file}
 Templates are stored on disk with the name of its parent template.
-When this file is reloaded to instantiate a template the system must be able to discover its
-parent by its name. This can be achieved using a breadth-first search of the template tree.
+When this file is loaded to instantiate a template the system must be able to discover its parent by its name.
+This can be achieved using a breadth-first search of the template tree or by doing a lookup in a hashmap containing a reference to the templates.
+%TODO What if a template has not been loaded yet? Keep in a temporary buffer or look for a particular filename
 The operation of loading a template and linking these to their parent is described in figure \ref{fig:inserttemplate}.
+
+First the template is read from a file inside the \emph{templates} directory.
+This directory is located in the data directory of the program as configured in the \emph{dataDir} variable.
+The template file bears the name of the template ending in \emph{.yml} to indicate that the file contains YAML formatted text data.
+After the file has been read it is unmarshaled from YAML into an intermediate structure in memory representing the YAML formatted data.
+% TODO: Figure that shows structs?
+This intermediate structure can then be used to instantiate the final template structure by creating a new template with the name of the template as obtained from the YAML data.
+If the template has a parent template it is inserted at the proper place in the tree by doing a lookup of the parent template by name and setting up the links between the nodes.
+When the parent template can not be found it is loaded from disk before continuing.
+If it does not have a parent the template is marked as the top-level root template serving as a base template for its children.
+When a base template already exists an error state exists since there can only be a single root node of the template tree.
+This error is reported to the user and the template is discarded from memory.
+After this is done the parameters are transferred from the intermediate structure into the final structure.
 
 \begin{figure}[h!]
 	\centering
@@ -173,6 +214,9 @@ The operation of loading a template and linking these to their parent is describ
 	\caption{Template insert operation}
 	\label{fig:inserttemplate}
 \end{figure}
+
+The prototype will load all templates it can find from the template directory once a load operation is requested.
+In the future this could be enhanced by lazily loading a template only when a template refers to it but within the demonstrative scope of the prototype the amount of templates will never raise to a number where this optimization would show a measurable difference in performance or memory usage.
 
 \section{Keeping revision history}
 In order to fulfill the ability to restore a template to a previous version a revision history is kept.
