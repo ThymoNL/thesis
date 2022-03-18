@@ -63,4 +63,31 @@ This is done because the program only allows a template deletion when it does no
 Thus this condition can only if the templates stored on disk were corrupted or modified outside the program.
 To limit the scope of the prototype this condition can not be recovered from and has to be manually resolved by removing the affected templates or editing the YAML files to get them back in the proper state.
 
-\section{Test coverage/Test suite}
+\section{Hikvision}
+The Hikvision api was implemented using the Hikvision ISTAPI documentation\cite{noauthor_intelligent_nodate}.
+Two paramaters had to be implemented.
+The first one was the motion detection sensitivity paramater.
+The XML for this has been mapped in a struct and is configured by reading the object, editing it and writing it back.
+Since the whole object is used it is trivial to implement more of these settings.
+For the purposes of this prototype only the sensitiviy parameter was used.
+TBD: Insert example XML from camera
+%TODO insert dummy XML payload
+
+In order to compare the changes to the template the API implementation uses the three steps as follows.
+First the prepare step must be executed whenever an action using the API is to be done.
+This has been split since both the compare and the configure step would have to do the same actions of getting the information from the camera bbefore doing further operations.
+After the prepare step has run the results are stored in the APIData field of the camera being operated on for use by the other functions.
+A choice can be made to do either the compare or the configure step.
+When a compare is done the XML is examined and their representations as paramaeters is constructed.
+These values are then compared with the values from the template to detect any mismatches.
+If a mismatch has been detected the parameter is added to a list so the program can output the expected and the actual value of that parameter.
+
+The configure step also depends on the data gathered using the prepare step and modifies the downloaded XML with the values from the template.
+By using the GetParam function of a template the template will provide a pointer to the proper parameter as described in the parameter enumeration part.
+The parameter provides the value that should be input to the XML body and when all paramaters that the API supports have been updated the configuration is written back to the camera as documented in the manufacturer API documentation.
+
+If the camera reports an error condition during the configuration process this error condition is reported backt to the user.
+
+\section{VCA}
+At the time of writing an implementation that can interact with a VCA camera has not been completed yet.
+This will be part of the final portfolio.
