@@ -106,13 +106,13 @@ When sorting the files by name the tenth revision would be sorted between files 
 In this case the descending sorted order would then be: 9, 8, 7, 6, 5, 4, 3, 2, 10, 1.
 This could be prevented by adding leading zeroes to the filename but that only delays the problem until the amount of revisions overflows the leading zeroes.
 If for example four digits would be used where the unused digits are zeroed the descending sorted order would be: 0010, 0009, 0008, 0007, 0006, 0005, 0004, 0003, 0002, 0001.
-As can be seen this would solve the problem but as soon as more than 9999 revisions are made the same problem occurse.
+As can be seen this would solve the problem but as soon as more than 9999 revisions are made the same problem occurs.
 Another potential solution unaffected by this problem is the use of the file modification time as stored on the filesystem.
 Using this file attribute would work in most cases although it can be affected by external factors such as changing system time or restoring from backups where the proper file attributes are not restored \cite{noauthor_mtime_nodate}.
 
 \subsection{Git}
 The second option that was evaluated was to use git.
-While git is most often used for tracking changes in software source files it describes itself as a fast, scaleable, distributed revision control system or "stupid" content tracker, since it makes no assumption about what content is stored in it \cite{truyers_git_2016}.
+While git is most often used for tracking changes in software source files it describes itself as a fast, scalable, distributed revision control system or "stupid" content tracker, since it makes no assumption about what content is stored in it \cite{truyers_git_2016}.
 
 Git can be used to keep track of changes in a repository by chaining them into commits.
 Each commit contains a snapshot of a set of files, a message that gives a description about the changes and metadata like who made a change and when.
@@ -129,7 +129,7 @@ By changing what commit the HEAD points to you can revert the state of the files
 
 Normally a user of git would interact with the repository through a command line or graphical user interface using a set of commands.
 There are many different commands that are available to the user.
-Examples of the most commonly used commands to view and record changes are: `git add` to mark files to be comitted (called staging), `git commit` to commit all the files that have been staged, `git push` to upload local changes to a remote git repository and `git status` to get a brief summary of that state of the repository. There are many more commands that can be used but for the purposes of brevity these have been omitted.
+Examples of the most commonly used commands to view and record changes are: `git add` to mark files to be committed (called staging), `git commit` to commit all the files that have been staged, `git push` to upload local changes to a remote git repository and `git status` to get a brief summary of that state of the repository. There are many more commands that can be used but for the purposes of brevity these have been omitted.
 
 Several libraries exist that implement these commands and allow us to use git from a program to make commits of our data and to revert back to an earlier version if necessary.
 Some notable ones are libgit2\footnote{\url{https://github.com/libgit2/libgit2}}, a pure C based implementation, and go-git\footnote{\url{https://pkg.go.dev/github.com/go-git/go-git/v5}}, an implementation in the Go programming language.
