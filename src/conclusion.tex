@@ -2,7 +2,7 @@
 BauWatch currently has no proper management solution to control its camera configurations and wishes to find a solution to remotely manage security cameras of different brands and parameters.
 In order to solve this problem an analysis of requirements was done which led to research being conducted to determine if there were any existing solutions, a design being made and a prototype that was implemented.
 
-While not all requirements have been met, the ones most relavant to the problem have been attained.
+While not all requirements have been met, the ones most relevant to the problem have been attained.
 At the time of writing it is expected that the designed system can be further developed from the prototype stage to transition into a fully functioning product to provide a satisfactory camera management solution.
 There are still some items that need to be implemented in the prototype to confirm their working but it is expected that these will be attained and at that time this conclusion will be updated accordingly.
 
@@ -19,20 +19,20 @@ This would best be done as the originally intended web interface using the provi
 \section{Extra parameters}
 The prototype only contains two parameters (at the time of writing the second parameter is not quite working yet) to demonstrate the concept of layering these using templates and their use in a generic way.
 In order to add more functionality to the system the implementation of the camera APIs should be extended to allow more camera parameters to be configured.
-When this is done it is also good to implement more paramater types for the templates.
-While there are two generic paramater types for working with string and integer values it would be better to implement a parameter type specifically designed for the type of setting it controls.
+When this is done it is also good to implement more parameter types for the templates.
+While there are two generic parameter types for working with string and integer values it would be better to implement a parameter type specifically designed for the type of setting it controls.
 This way the template parameter can have behavior that makes it easier to configure for a range of cameras or allows more fidelity for a specific parameter.
 Since there is no restriction to the operation of a parameter type other than conforming to the parameter interface quite complex types could be implemented.
 An example of a parameter type to implement could be to input the times a camera is set to an armed state to actively monitor for events using a menu that allows the user to select a certain time period.
 
 \section{Testing}
-While the templates are covered by unit tests it was not possible to implement automatic tests for the camera API within the given timeframe.
+While the templates are covered by unit tests it was not possible to implement automatic tests for the camera API within the given time frame.
 This could be improved by using the Go httptest package \cite{noauthor_golang_nodate} to implement a HTTP server that acts like a camera but responds with a predetermined set of data.
 This way one can be sure that tests can be reliably conducted without depending on a camera being available for testing and that there were no external changes that could affect the behavior of the program.
 Of course this means that in the event something changes on the camera side, like a firmware update or undocumented change in a model, that extra tests are created to reflect the changed situation.
 
 \chapter{Reflection}
-At the start of my graduation period halfway through november, the winter season was approaching and COVID-19 infection rates were again going up.
+At the start of my graduation period halfway through November, the winter season was approaching and COVID-19 infection rates were again going up.
 As a result the country entered into another lockdown in an attempt to flatten the curve.
 This unfortunately meant that working from home was again in effect.
 This meant I was not able to meet a lot of people at the start of my internship and it took a while to get to know my colleagues.

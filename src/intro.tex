@@ -1,8 +1,8 @@
 \begin{titlepage} 
 \maketitle
 \vspace*{\fill}
-Status: Draft
-Version: 0.4
+Status: Draft revision
+Version: 0.5
 Student number: 452434
 Degree: Software Engineering
 Saxion University of Applied Sciences
@@ -25,11 +25,25 @@ Peter Ebben & Saxion & Saxion mentor & p.w.g.ebben@saxion.nl
 \end{tabular}
 \end{center}
 \thispagestyle{empty}
-\chapter*{Acknowledgements}
-TBD
-\thispagestyle{empty}
+%\chapter*{Acknowledgements}
+%TBD
+%\thispagestyle{empty}
 \chapter*{Summary}
-This will be written at the end, max 1 page.
+As a part of the graduation phase of the bachelor degree HBO-ICT: Software Engineering this thesis has been written by Thymo van Beers at BauWatch during a research project lasting 20 weeks.
+BauWatch has a large amount of cameras in operation throughout Europe.
+Currently they have no ability to adequately manage the parameters the cameras are configured with.
+The main research question is, "How can a large number of remote security cameras of different models and brands be managed from a centralized system?"
+The goal of the project was to research possible solutions and to build a prototype which allowed for the centralized remote management of camera parameters.
+
+In order to define the requirements of the system a focus group was formed with two engineers who would further develop on the project outcomes and an interview was conducted with product management to better define the problems being experienced.
+
+With the obtained input research was done and an idea was lended from other lifecycle management software to orchestrate camera paramaters into templates.
+Additionally a method is given for maintaining revisions of these templates using git.
+These techniques have been combined into a system design and the workings of this design are implemented as a prototype.
+
+The results of this thesis indicate that management of different cameras through a single system is possible and that the design allows for the addition of extra camera models and parameter types without much effort.
+
+In the future the prototype could be extended with a graphical user interface and a client/server model as the current solution only provides for single user access through a text interface.
 \thispagestyle{empty}
 
 \thispagestyle{empty}
@@ -79,7 +93,7 @@ The focus was no longer solely on networking equipment but to also include work 
 % by the cameras, so they can quickly make adjustments when required. An example of an adjustment could be to change the cameras alarm sensitivity to movement. Right now there is no way to easily administer these settings across these cameras. Without a way to administer this a camera might not work properly if it is moved to
 % a location it wasn't configured for. In order to avoid this problem, settings are set to a default value which have been agreed to not be changed to optimize performance. These settings are distributed through the proprietary configuration backups from a camera. This makes it hard to keep track of which version of the configuration is being used.
 BauWatch has more than 10,000 cameras deployed on its videos masts throughout Europe. At the moment there is no adequate method to manage these cameras.
-Without a proper management solution it is impossible to get a overview of what configuration a camera is using.
+Without a proper management solution it is impossible to get an overview of what configuration a camera is using.
 The current workflow is to configure the cameras once after delivery from the manufacturer.
 After this initial configuration the configuration is not allowed to be changed.
 
@@ -117,7 +131,7 @@ In order to determine how this system should be built, a research question was f
 % Cameras will need to be registered with the system using their model number, IP-address and authentication information since there is no software system or database from which this can be queried. The system should also have the ability to detect any mismatches between a template and camera so the user knows that it needs to be updated.
 
 \section{Main question}
-The main question that the project will answer is: ,,How to manage a large number of remote security cameras of different models and brands with a centralized system?"
+The main question that the project will answer is: ,,How can a large number of remote security cameras of different models and brands be managed from a centralized system?"
 This question is further divided into the following sub-questions.
 
 \section{Subquestions}

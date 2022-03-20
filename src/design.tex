@@ -4,18 +4,18 @@ In this chapter the design for the Camera Provisioning system will be laid out.
 The goal of the system is to provide a solution which makes it possible to manage the configuration of cameras.
 The system allows the user to orchestrate parameters into different templates which can be assigned to a camera.
 The design contains both functional and technical specifications containing the descriptions of different components, requirements and supplemental diagrams and wireframes.
-Before further introducing the design two important disticions need to be made.
+Before further introducing the design two important distinctions need to be made.
 A \textit{template} refers to a set of data containing the parameters a camera should be configured with.
 A \textit{camera configuration} refers to the information that is required to interface with a camera such as its hostname and login credentials.
 
 \section{Requirements}
 In table \ref{tab:requirements} the requirements for the system have been defined.
 These requirements have been collected by discussing with the developers from the focus group and conducting an interview with a product manager during the analysis phase.
-When deemed necessary the requirements have been finetuned during the development of the prototype, after consulting with the stakeholders, to better explain their goal or when a better solution was found that did not comply with the initial formulation of that requirement.
+When deemed necessary the requirements have been fine-tuned during the development of the prototype, after consulting with the stakeholders, to better explain their goal or when a better solution was found that did not comply with the initial formulation of that requirement.
 
 The requirements are tracked using an identifier starting with a letter followed by a number and are listed in the ID column of table \ref{tab:requirements}.
 If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively.
-If the identifier starts with a 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
+If the identifier starts with an 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
 Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow_nodate}.
 
 \begin{table*}[h]
@@ -27,7 +27,7 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
         B1 & A camera can be configured by the user without detailed technical knowledge about the model being used & Must
         \\ \hline
 		% TODO: When is a rev incompatible?
-        B2 & A camera configuration can be rolled back to any compatible version in history & Must
+		B2 & A camera configuration can be rolled back to any (compatible) version in history & Must
         \\ \hline
         B3 & The configuration changes must include auditing showing at least the author and timestamp & Must
         \\ \hline
@@ -67,7 +67,7 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 		\\ \hline
 		NF5 & Code that can not reasonably be covered by unit tests must be covered by manual system tests & Must
         \\ \hline
-        NF6 & Templates and camera configuration are stored on disk in a human-readable/writeable format & Must
+        NF6 & Templates and camera configuration are stored on disk in a human-readable/writable format & Must
         \\ \hline
         NF7 & The application is to be exposed as a REST API and documented via OpenAPI & Could
 		\\ \hline
@@ -80,13 +80,19 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 \end{table*}
 
 % TODO: Maybe this fits better in implementation since it goes into programming lanuguage, linting etc.
-\section{General design}
-At the conclusion of this project the prototype is handed over to the back-end team of BTG.
-Since they will be further developing the prototype into a production ready system the choice was made to implement the system in Go as that programming language is their preferred language for new products fulfilling requirement NF-2.
+\section{Programming language}
+Before major design decisions can be made it should be established what programming language should be used to develop the prototype.
+There are several factors which affect the choice for a programming language.
+First of all the requirements state that the code shall be written in a strongly typed language.
+They also state that code must be checked by a linter that has been configured by BTG, this limits the choice of language to one for which they can supply a linter configuration.
+The second factor that affects this choice is wheter or not the developers involved have experience with the programming language that's going to be used.
+At the end of the project the prototype is to be transferred to the backend team of BTG.
+Since they will be further developing the prototype into a production ready system the choice is made to implement the system in Go.
+While I personally did not have any previous experience with Go but after some experimentation with the language this is deemed an acceptable risk since it is the most used language at BTG and it would be the easiest language to ask for some help in case problems are to be experienced.
 
 \section{Templates}
 The prototype will have a user interface through which a template can be configured.
-A template in the context of this system is a collection of lists containing camera configuration options.
+A template in the context of this system is a collection of lists containing camera parameters.
 Templates can be built up from different layers where each layer can override parameters from the layer above.
 This allows the user to define a template that is shared by a large amount of cameras but still allows fine-grained control over a smaller subset when this is desired.
 These cameras would still use all the settings from the parent template but would have a different setting for the parameter being overridden.
@@ -95,10 +101,10 @@ These cameras would still use all the settings from the parent template but woul
 The parameters within a template may or may not be used by the camera configuration API.
 It is up to the programmer to decide what parameters a configuration should or should not support.
 For example, given two cameras of which one supports motion detection and the other does not supporting motion detection of any kind.
-In this case it is known by the camera configuration component that the camera supports motion detection and it shall look for paramaters that define motion detection settings
-\footnote{One should note that within the scope of this prototype only the motion detection sensitivity paramater has been implemented but in a production implementation there will be more.}.
-The camera configration component also knows that the other camera does not support motion detection and hence will not look in the template for parameters describing motion detection but will limit itself to parameters relevant to that camera.
-This allows the template to describe paramaters for multiple types of devices and leaving the responsibility of determining what parameters to use or not use to the components that know how to configure that particular device.
+In this case it is known by the camera configuration component that the camera supports motion detection and it shall look for parameters that define motion detection settings
+\footnote{One should note that within the scope of this prototype only the motion detection sensitivity parameter has been implemented but in a production implementation there will be more.}.
+The camera configuration component also knows that the other camera does not support motion detection and hence will not look in the template for parameters describing motion detection but will limit itself to parameters relevant to that camera.
+This allows the template to describe parameters for multiple types of devices and leaving the responsibility of determining what parameters to use or not use to the components that know how to configure that particular device.
 In the future this could also be used to extend the template with parameters for devices other than cameras, provided the system is changed to support the configuration of such devices.
 
 \section{Datastructure}
@@ -111,7 +117,7 @@ Using this datastructure is an efficient method to enumerate the values of a tem
 A parameter can be enumerated by traversing each parent node starting from the node representing the current template and checking if it defines the sought parameter.
 This process is repeated until a value for a given parameter is found.
 Figure \ref{fig:find_param} shows how parameters are inherited.
-If ParamB would be enumerated at the Child2 node the system would determine that it is not defined in Child2 by checking if it is present in the list of paramaters contained in the node.
+If ParamB would be enumerated at the Child2 node, the system would determine that it is not defined in Child2 by checking if it is present in the list of parameters contained in the node.
 The system would then visit the parent nodes until a definition of ParamB is found.
 Parameters A and C can be enumerated instantly since they are defined in Child2 itself where ParamC is newly introduced and ParamA overrides the values from Child1 and BaseTemplate.
 \begin{marginfigure}
@@ -120,16 +126,20 @@ Parameters A and C can be enumerated instantly since they are defined in Child2 
 	\caption{Parameter enumeration}
 	\label{fig:find_param}
 \end{marginfigure}
-The best-case performance for a parameter lookup is O(1) in the case the parameter is already defined in the current template.
-The worst-case performance of a lookup is O(n) where n is the number of templates to be traversed from the current node to the root node.
 
 When a new template is instantiated, by creating a new one or loading one from YAML, that template has to be inserted at the correct place inside the tree.
 The way this is achieved is to do a breadth-first search (BFS) (Figure \ref{fig:bfs}) in the tree where a match is identified using the name of the parent node.
 Using BFS to find the parent node is more efficient than a depth-first search (DFS) as a template is more likely to inherit from a more generic template describing e.g. parameters for a country than a more specific template representing parameters for a specific building site.
+
+Using this tree structure the best-case performance for a parameter lookup is O(1) in the case the parameter is already defined in the current template.
+The worst-case performance of a lookup is O(n) where n is the number of templates to be traversed from the current node to the root node.
+Consideration was also given to the use of a hashmap in addition to the maintenance of the tree so that the worst-case performance could be improved by depending on the O(1) time complexity of a lookup instead of a search algorithm.
+While the usage of this additional datastructure would improve the time complexity of a node insertion, it was found that the "real" time improvements of using this datastructure proved to be negligible and in testing both options appeared to happened instantaneous to the user.
+Considering the fact that the system would not have an amount of templates that would make this improvement measurable the choice was made not to incorporate an additional hashmap in the design.
 \begin{marginfigure}
 	\centering
 	\includesvg{Sorted_binary_tree_breadth-first_traversal}
-	\caption{Sorted binary tree with first nine letters of alphabet, showing inorder traversal\cite{pluke_sorted_2010}}
+	\caption{Sorted binary tree with first nine letters of alphabet, showing in-order traversal\cite{pluke_sorted_2010}}
 	\label{fig:bfs}
 \end{marginfigure}
 
@@ -169,8 +179,8 @@ Go allows for this behavior by specifying the return value to be an \textit{inte
 This indicates that the type being returned is an interface that does not necessarily implement any methods and is roughly equivalent in use to the Object class in Java.
 
 % Creating parameters
-To instantiate a new paramater a function is provided based on the Factory Method design pattern, the function implementing this factory is called \textit{NewParameter}.
-Using this function the instantiation of the proper parameter type can be deferred to the factory so that the code needing to instantiate a paramater does not have to find out which parameter constructor to call.
+To instantiate a new parameter a function is provided based on the Factory Method design pattern, the function implementing this factory is called \textit{NewParameter}.
+Using this function the instantiation of the proper parameter type can be deferred to the factory so that the code needing to instantiate a parameter does not have to find out which parameter constructor to call.
 The \textit{NewParameter} factory function will return a pointer to an object implementing the requested parameter type which can then be used to Get and Set the parameter values.
 
 \section{Storing to file}
@@ -220,20 +230,16 @@ In the future this could be enhanced by lazily loading a template only when a te
 
 \section{Keeping revision history}
 In order to fulfill the ability to restore a template to a previous version a revision history is kept.
+During research it was determined that git is a suitable option to implement this feature.
 
+Whenever the user makes a change to a new or exisiting template they are prompted to give a description for the changes they have made.
+The changes to the template are then written to the yaml file representing the template.
+This file will reside inside a directory that has been initialized as a git repository by the program.
+With the changes written to disk the template is comitted using the author name and email address entered at the start of the program and the description entered at the end of the editing process.
 
-Design:
-Each time a template is saved it is saved as a yaml file and committed in git.
-A commit only modifies one file at a time.
-A template can be reverted to an earlier commit.
-Author information is entered at the login screen.
-library available that implements porcelain functions:
-https://github.com/go-git/go-git
+At any one time a commit will only contain changes for a single file so that they can be reverted without making inadvertent changes to other templates causing unexpected behavior.
 
-Decision that still needs to be made:
-Keep all templates in the same directory or keep them in separate ones.
-Separate directories may be slightly more efficient due to the way git stores these but this may not matter at this scale nor make sense as there is only a single file for a template now.
-It could be stored in the same directory.
+For the implementation, usage will be made of a native Go library such as go-git.
 
 \section{Camera interface}
 The camera interface is a system component that sits between the template component and the cameras themselves. The purpose of this component
@@ -246,7 +252,7 @@ This component maps the parameter from the template to an appropriate value for 
 In order for a camera to accept new parameters they require a form of authentication. All cameras being used to implement the prototype support both HTTP Basic and HTTP Digest authentication.
 To successfully interface with the cameras one or both of these authentication methods must be supported by the camera interface component.
 
-TODO Add activity diagram from notes here
+%TODO Add activity diagram from notes here
 
 \section{Translating generic parameters to camera specific values}
 As an example of translating a generic parameter to a camera specific value the detection sensitivity parameter is used.
@@ -273,10 +279,14 @@ This way the CameraAPI can be run up to the point that it is ready to write the 
 At that point it can be checked if any changes would be made and if so what parameters are affected.
 The user can then be presented with both the parameter value in the template as the one that is read from the camera.
 
+%TODO Add other wireframes?
 \section{User interface}
 The components of the system can be managed through a web interface.
 They will allow the user to create a new template and add parameters to it as seen in figure \ref{fig:templatewireframe}.
-The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system (TBD still).
+The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system.
+At the time of writing not all wireframes have been completed.
+It was determined that the implementation of a graphical web interface was not feasible within the given time frame and as such the completion of the wireframes has become a low priority.
+It is expected that some extra wireframes will be added before the end of the project to give an indication of how the interface would have looked like if a GUI had been implemented.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.2]{wireframes}
@@ -287,4 +297,4 @@ The user should also be able to manage the relations between templates as well a
 \section{REST API}
 Originally the prototype was meant to have an API so that the user could interact with the system through a web interface.
 Unfortunately there was not enough time to implement this into the final prototype but some designs for how this API would operate have been made nonetheless.
-The API has been described according to the OpenAPI specification.TBD yaml in appendix or PDF somehow.
+The API has been described according to the OpenAPI specification and can be found in appendix \ref{apdx:openapi}.

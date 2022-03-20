@@ -1,0 +1,91 @@
+---
+openapi: 3.0.3
+info:
+  title: Camera Provisioning Interface API
+  description: A REST API to interface with the camera provisioning system
+  version: 1.0.0
+servers:
+  - url: 'https://cp.local/'
+paths:
+  /template/{name}:
+    parameters:
+      - name: name
+        in: path
+    get:
+      description: Return a template with the given :name
+      responses:
+        '200':
+          description: Successfully returned the requested template
+          content:
+            application/x-yaml:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  parent:
+                    type: string
+                  parameters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        name:
+                          type: string
+                        attributes:
+                          type: string
+        '404':
+          description: Template not found
+          content:
+            application/x-yaml:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      description: Create or edit a template
+      responses:
+        '200':
+          description: Successfully created a new template
+        '400':
+          description: Template is invalid
+        '201':
+          description: Template has been created
+    delete:
+      description: Delete a template
+      responses:
+        '404':
+          description: Template to be deleted not found
+        '403':
+          description: Tried to delete the default template
+
+  /camera/{name}:
+    parameters:
+      - name: name
+        in: path
+    get:
+      description: Retrieve a camera configuration
+      responses:
+        '200':
+          description: Camera found
+        '404':
+          description: Camera not found
+    post:
+      description: Create or update a camera
+      responses:
+        '200':
+          description: Camera updated
+        '201':
+          description:  Camera created
+        '400':
+          description: Request body invalid
+    delete:
+      description: Delete a camera
+      responses:
+        '200':
+          description: Camera deleted
+        '404':
+          description: Camera not found

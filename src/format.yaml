@@ -14,6 +14,3 @@ parameters:
     name: "sensitivity"
     attributes:
         level: "high"
-        low: 10
-        medium: 50
-        high: 80

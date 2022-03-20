@@ -5,15 +5,15 @@ These templates contain a standardized directory structure along with configurat
 This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation generators and automatic tests.
 
 \section{Modules}
-Module based programming worth describing?
-Maybe interesting to describe the source layout?
-Built using Makefile
-
 The application is divided into three modules and one main file.
+Within the modules the unit tests have been integrated and are suffixed with "\_test".
+Inside the root directory of the project ancillary files like CI configuration and a Makefile are also included.
+The makeutils directory contains files supplied by BauWatch that aide in doing some checks that need to be done before changes can be merged to the master branch.
+There is no direct dependency on makeutils and the project does not require them to compile.
 
 \subsection{Continuous Integration}
 By default all repositories are set up to check all code submitted as a merge request complies with a set of merge checks.
-First of all the continuous integration environment checks if the code successully compiles and passes its checks.
+First of all the continuous integration environment checks if the code successfully compiles and passes its checks.
 After that the commits are checked to verify they refer to the Jira story the feature branch is associated with and if a changelog file describing the changes for that story is present.
 If all checks pass the merge request will be marked with a green check mark indicating it is ready to be reviewed by someone.
 Once all review comments have been resolved and the reviewer approves the changes they can be merged back into the master branch by someone with maintainer permissions for that repository.
@@ -28,31 +28,32 @@ Once all review comments have been resolved and the reviewer approves the change
 %Guard against this in the model and disallow adding parameters through the webpanel.
 %Additionally the base template should be initialized from some presupplied default, be it yaml or constants.
 
-\section{Template implementation}
-Pics:
-Struct, interactions between templates
-Describe how template stacking works
+%\section{Template implementation}
+%Pics:
+%Struct, interactions between templates
+%Describe how template stacking works
 
 \section{Using the system}
 The system can be used from the commandline using the following commands:
 \begin{enumerate}
-\item help: List the available commands
-\item exit: Exit the program
-\item quit: Alias for exit
-\item camera: Configure a camera
-\item template: Configure a template
-\item save: Save a template revision
-\item load: Load a template from disk
-\item compare: Check if a camera is configured according to its template and if not show the differences
-\item configure: Configure a camera using the template that has been assigned to it
+	\item help: List the available commands
+	\item exit: Exit the program
+	\item quit: Alias for exit
+	\item camera: Configure a camera
+	\item template: Configure a template
+	\item load: Load a template from disk
+	\item revisions: Show all the revision of a template (Not yet implemented)
+	\item revert: Revert a template to a previous revision (Not yet implemented)
+	\item compare: Check if a camera is configured according to its template and if not show the differences
+	\item configure: Configure a camera using the template that has been assigned to it
 \end{enumerate}
-
-TODO Show how to do each step.
 
 \section{Saving}
 A lot of time was initially spent implementing the template save and loading functionality.
-First an attempt was done using polymorphism of yaml. However this proved problematic as during unmarshaling the librarby did not know what to instantiate.
-After trying to fix this a different approach was taken that ended up being a lot simpler.
+First an attempt was done using polymorphism of yaml. However this proved problematic as during unmarshaling the library did not know what type of parameter should be instantiated.
+After trying to come up with various solutions to infer the type of the parameter in the yaml file the choice was made to encode all parameters in the same way and specifying their type inside a type field.
+This made it possible to put all parameters inside the same struct and deferring the instantiation of the proper parameter type to a later point in the code.
+Doing it this way also shrunk the code required to implement the parameters by quite a bit.
 
 \section{Loading}
 When a load instruction is given to the system a call is done to LoadTemplate with the name of the template to be loaded.
@@ -65,28 +66,28 @@ To limit the scope of the prototype this condition can not be recovered from and
 
 \section{Hikvision}
 The Hikvision api was implemented using the Hikvision ISTAPI documentation\cite{noauthor_intelligent_nodate}.
-Two paramaters had to be implemented.
-The first one was the motion detection sensitivity paramater.
+Two parameters had to be implemented.
+The first one was the motion detection sensitivity parameter.
+This parameter is provided by the API inside the motionDetection object.
 The XML for this has been mapped in a struct and is configured by reading the object, editing it and writing it back.
 Since the whole object is used it is trivial to implement more of these settings.
-For the purposes of this prototype only the sensitiviy parameter was used.
-TBD: Insert example XML from camera
-%TODO insert dummy XML payload
+For the purposes of this prototype only the sensitivity parameter was used.
+\lstinputlisting[language=xml,breaklines=true,caption={Hikvision motionDetection XML object},label={lst:hik_md}]{motionDetection.xml}
 
 In order to compare the changes to the template the API implementation uses the three steps as follows.
 First the prepare step must be executed whenever an action using the API is to be done.
-This has been split since both the compare and the configure step would have to do the same actions of getting the information from the camera bbefore doing further operations.
+This has been split since both the compare and the configure step would have to do the same actions of getting the information from the camera before doing further operations.
 After the prepare step has run the results are stored in the APIData field of the camera being operated on for use by the other functions.
 A choice can be made to do either the compare or the configure step.
-When a compare is done the XML is examined and their representations as paramaeters is constructed.
+When a compare is done the XML is examined and their representations as parameters is constructed.
 These values are then compared with the values from the template to detect any mismatches.
 If a mismatch has been detected the parameter is added to a list so the program can output the expected and the actual value of that parameter.
 
 The configure step also depends on the data gathered using the prepare step and modifies the downloaded XML with the values from the template.
 By using the GetParam function of a template the template will provide a pointer to the proper parameter as described in the parameter enumeration part.
-The parameter provides the value that should be input to the XML body and when all paramaters that the API supports have been updated the configuration is written back to the camera as documented in the manufacturer API documentation.
+The parameter provides the value that should be input to the XML body and when all parameters that the API supports have been updated the configuration is written back to the camera as documented in the manufacturer API documentation.
 
-If the camera reports an error condition during the configuration process this error condition is reported backt to the user.
+If the camera reports an error condition during the configuration process this error condition is reported back to the user.
 
 \section{VCA}
 At the time of writing an implementation that can interact with a VCA camera has not been completed yet.
