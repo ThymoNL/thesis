@@ -9,8 +9,12 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage[acronym]{glossaries}
-\usepackage[style=ieee]{biblatex}
+\usepackage[style=ieee,language=australian]{biblatex}
 \usepackage{svg}
+\usepackage{tcolorbox}
+\usepackage{amssymb}
+\tcbuselibrary{skins,breakable}
+\tcbset{segmentation engine=path}
 %\usepackage[s]{hyperref}
 
 \usepackage{zref-savepos}
@@ -26,6 +30,12 @@
 \newcommand\YAMLvaluestyle{\color{blue}\mdseries}
 
 \makeatletter
+
+\newcounter{testcounter}
+\newcommand*{\testcounterautorefname}{System Test}
+\newtcolorbox[use counter=testcounter]{test}[2][]{%
+colback=lightgray,colframe=gray,coltitle=white,fonttitle=\bfseries,segmentation style={draw=gray, solid, very thick},
+    title=System Test \thetcbcounter: #2,#1}
 
 % here is a macro expanding to the name of the language
 % (handy if you decide to change it further down the road)
@@ -96,7 +106,7 @@
 
 \title{Camera Provisioning}
 \author{Thymo van Beers}
-\date{February 2022}
+\date{April 2022}
 \extrainfo{
 	Bachelor thesis
 	\newline

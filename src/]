@@ -17,7 +17,8 @@ The requirements are tracked using an identifier starting with a letter followed
 If the identifier starts with the letter 'B' or a 'U' they specify a business or user requirement respectively.
 If the identifier starts with an 'F' or 'NF' they specify a functional or non-functional system requirement respectively.
 Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow_nodate}.
-\begin{table*}[h!]
+
+\begin{table*}[h]
     \centering
     \begin{tabulary}{\linewidth}{CLL}
         \textbf{ID} & \textbf{Requirement} & \textbf{MoSCoW}
@@ -27,30 +28,32 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
         \\ \hline
 		B2 & A template can be rolled back to any (compatible) version in history & Must
         \\ \hline
-        B3 & The template revisions must include auditing showing at least the author and timestamp & Must
+        B3 & The template changes must include auditing showing at least the author and timestamp & Must
         \\ \hline
         B4 & Parameters whose values behave differently across brands shall be scaled by an adjustable factor for each brand & Should
         \\ \hline
-        B5 & The application has the option to show the user the differences between the actual settings in the camera and the template & Must
+        B5 & The application has the option to show the user the differences between the config in the camera and the template & Must
     %%% User requirements
         \\ \hline
         U1 & The interface must only allow authorized users, preferably via username and password & Could
         \\ \hline
         U2 & A user can change his credentials through the interface & Could
         \\ \hline
-        U3 & The application should be able to configure one parameter based on a string and one setting based on an integer value for both cameras & Should
+        U3 & The template used for configuring cameras must include one setting based on a string and one setting based on an integer value & Should
         \\ \hline
-        U4 & The application should be able to handle one or more settings in a template that are not present in any of its parents & Should
+        U4 & New settings can be added to the application without having to change the templates & Must
         \\ \hline
-        U5 & The user should be able to change templates via a user interface & Should
+        U5 & The application should be able to handle one or more settings in a template that are not present in any of its parents & Should
         \\ \hline
-        U6 & A user can create a new template with a specified parent template & Must
+        U6 & The user should be able to change templates via a user interface & Should
         \\ \hline
-		U7 & A user shall be able to trigger the configuration process on one or all cameras according to their template & Must
+        U7 & A user can create a new template with a specified parent template & Must
+        \\ \hline
+		U8 & A user shall be able to trigger the configuration process on one or all cameras according to their template & Must
 		\\ \hline
-		U8 & The user should be able to configure cameras via a user interface & Should
+		U9 & The user should be able to configure cameras via a user interface & Should
 		\\ \hline
-		U9 & The user must be able to assign which template a camera is associated with & Must
+		U10 & The user must be able to assign which template a camera is associated with & Must
     %%% System requirements
         \\ \hline
         NF1 & The application must communicate with the cameras using HTTP & Must
@@ -63,15 +66,13 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 		\\ \hline
 		NF5 & Code that can not reasonably be covered by unit tests must be covered by manual system tests & Must
         \\ \hline
-        NF6 & Templates and their parameters are stored on disk in a human-readable/writable format & Must
+        NF6 & Templates and camera configurations are stored on disk in a human-readable/writable format & Must
         \\ \hline
-		NF7 & The application would consist of a frontend and backend; the backend exposes a REST API documented in OpenAPI & Could
+        NF7 & The application is to be exposed as a REST API and documented via OpenAPI & Could
 		\\ \hline
 		NF8 & The application can be used interactively & Must
         \\ \hline
         NF9 & The templates must be camera independent & Must
-        \\ \hline
-        NF10 & Support for new parameters can be added to the application without having to change the templates & Must
     \end{tabulary}
     \caption{Requirements}
     \label{tab:requirements}
@@ -81,64 +82,62 @@ Requirements have been prioritized using the MoSCoW method \cite{noauthor_moscow
 Before major design decisions can be made it should be established what programming language should be used to develop the prototype.
 There are several factors which affect the choice for a programming language.
 First of all the requirements state that the code shall be written in a strongly typed language.
-
+They also state that code must be checked by a linter that has been configured by BTG, this limits the choice of language to one for which they can supply a linter configuration.
+The second factor that affects this choice is wheter or not the developers involved have experience with the programming language that's going to be used.
 At the end of the project the prototype is to be transferred to the backend team of BTG.
-In order to avoid the need for the backend team to rewrite the application from scratch a requirement has been made that the code must be checked by a linter configured by BTG, preferably in a language already used by the team.
-There are two languages used by the backend team, C\# and Go.
-The latter of these is considered the language of choice and C\# is mostly used in legacy systems.
-Personally I did not have any experience in either of these languages but after some experimentation I found that out of these two, Go aligned the most with my personal preferences.
-The choice could've been made to use a programming language I already knew but this meant I would be mostly on my own in case I ran into trouble.
-Because of this I decided to use Go and accept the risk of using a new programming language so it would be easier to get answers to questions in case I got stuck.
+Since they will be further developing the prototype into a production ready system the choice is made to implement the system in Go.
+While I personally did not have any previous experience with Go but after some experimentation with the language this is deemed an acceptable risk since it is the most used language at BTG and it would be the easiest language to ask for some help in case problems are to be experienced.
 
 \section{Templates}
-The application will have a user interface through which a template can be configured.
-A template in the context of this system is an object containing a set of camera parameters and a reference to a parent template.
+The prototype will have a user interface through which a template can be configured.
+A template in the context of this system is a collection of lists containing camera parameters.
 Templates can be built up from different layers where each layer can override parameters from the layer above.
-This allows the user to define a template that is shared by a large amount of cameras but still allows fine-grained control over a smaller subset through a child template when this is desired.
+This allows the user to define a template that is shared by a large amount of cameras but still allows fine-grained control over a smaller subset when this is desired.
 These cameras would still use all the settings from the parent template but would have a different setting for the parameter being overridden.
+
 
 The parameters within a template may or may not be used by the camera configuration API.
 It is up to the programmer to decide what parameters a configuration should or should not support.
-For example, take two cameras of which one supports motion detection and the other having no support for motion detection of any kind.
-In this case it is known by the CameraAPI implementation that the camera supports motion detection and that it needs to look for parameters that define motion detection settings.
-The CameraAPI implementation also knows that the other camera does not support motion detection and hence will not look in the template for parameters describing motion detection but will limit itself to parameters relevant to that camera.
-
-This allows the template to describe parameters for multiple types of devices in a completely device agnostic way by leaving the responsibility of determining what parameters to use or not use to the CameraAPI implementations that know how to configure that particular device.
-In the future this method of specifying parameters in a device agnostic way can therefore be used to extend the application with parameters for devices other than cameras, provided that a CameraAPI implementation is made that implements the actions needed to configure that device.
+For example, given two cameras of which one supports motion detection and the other does not supporting motion detection of any kind.
+In this case it is known by the camera configuration component that the camera supports motion detection and it shall look for parameters that define motion detection settings
+\footnote{One should note that within the scope of this prototype only the motion detection sensitivity parameter has been implemented but in a production implementation there will be more.}.
+The camera configuration component also knows that the other camera does not support motion detection and hence will not look in the template for parameters describing motion detection but will limit itself to parameters relevant to that camera.
+This allows the template to describe parameters for multiple types of devices and leaving the responsibility of determining what parameters to use or not use to the components that know how to configure that particular device.
+In the future this could also be used to extend the template with parameters for devices other than cameras, provided the system is changed to support the configuration of such devices.
 
 \section{Datastructure}
-\begin{marginfigure}
-	\centering
-	\includegraphics[width=3cm]{find_param}
-	\caption{Parameter enumeration}
-	\label{fig:find_param}
-\end{marginfigure}
 Templates are represented in memory as a tree using dynamically allocated nodes that have pointers to one parent and zero or more children.
 There is a single template that is considered to be the root node of the tree.
 All templates that are added to the system will be a direct or indirect descendant of this root node.
 The choice to represent the collection of templates as a tree is to solve the requirement of parameter inheritance.
 Using this datastructure is an efficient method to enumerate the values of a template's parameters at configuration time.
 
-A parameter can be enumerated by traversing each parent node starting from the node representing the template assigned to the camera being configured and checking if it defines the sought parameter.
-This process is repeated until a value for a given parameter is found or the root node is reached.
+A parameter can be enumerated by traversing each parent node starting from the node representing the current template and checking if it defines the sought parameter.
+This process is repeated until a value for a given parameter is found.
 Figure \ref{fig:find_param} shows how parameters are inherited.
 If ParamB would be enumerated at the Child2 node, the system would determine that it is not defined in Child2 by checking if it is present in the list of parameters contained in the node.
 The system would then visit the parent nodes until a definition of ParamB is found.
 Parameters A and C can be enumerated instantly since they are defined in Child2 itself where ParamC is newly introduced and ParamA overrides the values from Child1 and BaseTemplate.
+\begin{marginfigure}
+	\centering
+	\includegraphics[width=3cm]{find_param}
+	\caption{Parameter enumeration}
+	\label{fig:find_param}
+\end{marginfigure}
 
-When a template is instantiated, by creating a new one or loading one from the filesystem, that template has to be inserted at the correct place inside the tree.
+When a new template is instantiated, by creating a new one or loading one from YAML, that template has to be inserted at the correct place inside the tree.
 The way this is achieved is to do a breadth-first search (BFS) (Figure \ref{fig:bfs}) in the tree where a match is identified using the name of the parent node.
 Using BFS to find the parent node is more efficient than a depth-first search (DFS) as a template is more likely to inherit from a more generic template describing e.g. parameters for a country than a more specific template representing parameters for a specific building site.
 
 Using this tree structure the best-case performance for a parameter lookup is O(1) in the case the parameter is already defined in the current template.
-The average case performance is O(log n) and the worst-case performance of a lookup is O(n) where n is the number of templates to be traversed from the current node to the root node.
+The worst-case performance of a lookup is O(n) where n is the number of templates to be traversed from the current node to the root node.
 Consideration was also given to the use of a hashmap in addition to the maintenance of the tree so that the worst-case performance could be improved by depending on the O(1) time complexity of a lookup instead of a search algorithm.
 While the usage of this additional datastructure would improve the time complexity of a node insertion, it was found that the "real" time improvements of using this datastructure proved to be negligible and in testing both options appeared to happened instantaneous to the user.
 Considering the fact that the system would not have an amount of templates that would make this improvement measurable the choice was made not to incorporate an additional hashmap in the design.
 \begin{marginfigure}
 	\centering
 	\includesvg{Sorted_binary_tree_breadth-first_traversal}
-	\caption{Sorted binary tree with first nine letters of alphabet, showing a visual representation of a Breadth-first search\cite{pluke_sorted_2010}}
+	\caption{Sorted binary tree with first nine letters of alphabet, showing in-order traversal\cite{pluke_sorted_2010}}
 	\label{fig:bfs}
 \end{marginfigure}
 
@@ -155,7 +154,7 @@ The children of the root template then become the first template to define the t
 
 \section{Parameters}
 Cameras can contain many different types of parameters.
-These parameters can consist of something simple like an integer or a text string but they can also be represented as something more complex like a bitmap representing a section of a rectangle as is done by the Hikvision manufacturer API or coordinates of a bounding box for example.
+These parameters can consist of something simple like an integer or a text string but they can also be represented as something more complex like a bitmap representing a section of a rectangle as is done by the Hikvision manufacturer API for example.
  To allow a template to work with these parameters in a generic way some abstractions can be applied.
 Templates contain a map of which the key is a string representing the name of a parameter and the value is a pointer to an object implementing the parameter interface.
 This way the template class can expose access to its parameters so that the CameraAPI can use them without needing to concern itself with what the type of its parameters are.
@@ -164,12 +163,12 @@ This way the template class can expose access to its parameters so that the Came
 The Get and Set method of the Parameter interface behave differently depending on the instance of a parameter.
 As can be seen in figure \ref{fig:class_diagram} there are three parameters implementing the parameter interface.
 
-\begin{figure*}[h!]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[scale=1]{class_diagram}
-	\caption{Class diagram of the application}
+	\caption{Class diagram}
 	\label{fig:class_diagram}
-\end{figure*}
+\end{figure}
 
 % TODO: Explain in detail how each parameter works and how ex. levels are defined.
 These are the classes IntegerParameter, StringParameter and LevelParameter.
@@ -200,6 +199,7 @@ The following data is used to describe a template in YAML:
 \section{Reading from file}
 Templates are stored on disk with the name of its parent template.
 When this file is loaded to instantiate a template the system must be able to discover its parent by its name.
+This can be achieved using a breadth-first search of the template tree or by doing a lookup in a hashmap containing a reference to the templates.
 %TODO What if a template has not been loaded yet? Keep in a temporary buffer or look for a particular filename
 The operation of loading a template and linking these to their parent is described in figure \ref{fig:inserttemplate}.
 
@@ -224,17 +224,16 @@ After this is done the parameters are transferred from the intermediate structur
 \end{figure}
 
 The prototype will load all templates it can find from the template directory once a load operation is requested.
-Templates that already have been loaded are skipped.
 In the future this could be enhanced by lazily loading a template only when a template refers to it but within the demonstrative scope of the prototype the amount of templates will never raise to a number where this optimization would show a measurable difference in performance or memory usage.
 
 \section{Keeping revision history}
 In order to fulfill the ability to restore a template to a previous version a revision history is kept.
 During research it was determined that git is a suitable option to implement this feature.
 
-Whenever the user makes a change to a new or existing template they are prompted to give a description for the changes they have made.
+Whenever the user makes a change to a new or exisiting template they are prompted to give a description for the changes they have made.
 The changes to the template are then written to the yaml file representing the template.
 This file will reside inside a directory that has been initialized as a git repository by the program.
-With the changes written to disk the template is committed using the author name and email address entered at the start of the program and the description entered at the end of the editing process.
+With the changes written to disk the template is comitted using the author name and email address entered at the start of the program and the description entered at the end of the editing process.
 
 At any one time a commit will only contain changes for a single file so that they can be reverted without making inadvertent changes to other templates causing unexpected behavior.
 
@@ -246,36 +245,30 @@ is to translate the settings from a template into an API call understood by the 
 While two camera's of the same brand may use the same API.
 There still might be some slight differences between two models that are not completely compatible.
 Instead of adding a new API that is tailored specifically to that model a provision is made to store information about the camera model inside the Camera struct.
-This information could be used by the API to modify its behavior for that particular model that still allows the use of the other functions of the API that are common to all models of the particular camera vendor.
+This information could be used by the API to modify it's behavior for that particular model that still allows the use of the other functions of the API that are common to all models of the particular camera vendor.
 This component maps the parameter from the template to an appropriate value for that camera.
 In order for a camera to accept new parameters they require a form of authentication. All cameras being used to implement the prototype support both HTTP Basic and HTTP Digest authentication.
 To successfully interface with the cameras one or both of these authentication methods must be supported by the camera interface component.
 
 %TODO Add activity diagram from notes here
 
-\section{Translating between generic parameters and camera specific values}
+\section{Translating generic parameters to camera specific values}
 As an example of translating a generic parameter to a camera specific value the detection sensitivity parameter is used.
 For the Hikvision camera this is a value that can be configured between 0 and 100 in increments of 20.
-For the VCA camera this can be done by setting a number between 1 and 128 of which all values can be used.
-Because these parameters use a different range, using the same value in both cameras may not exhibit the same behavior.
+For the VCA camera this works by setting a number between 1 and 128.
 
-To solve this problem the parameter is abstracted into different levels that describe the expected behavior instead of an absolute value.
-For example, the levels for sensitivity used in the prototype are labeled as low, medium, high and ultra.
-These levels can then be used by the Camera API to replace it with a value that best corresponds the expected behavior.
+Because these parameters may behave differently between camera manufacturers and individual models the template parameter is divided into a couple of presets so these presets describing expected behavior.
+For example, the presets for sensitivity used in the prototype are labeled as low, medium, high and ultra.
+These presets can then be used by the Camera API to replace it with a value that best corresponds the expected behavior.
 This way cameras may not have the same value for that parameter but they will behave in the same manner as closely as possible.
-
-To facilitate between the translation of generic parameters and camera specific values the \emph{ParamConverter} interface is provided which can be implemented for each parameter requiring translation.
-As can be seen in figure \ref{fig:class_diagram} these are implemented for each instance of a \emph{CameraAPI} that support the generic parameter.
-In order to convert a parameter from a template into a value that can be set in the camera, the \emph{ToCamera} method is used.
-The return value is specified as an empty interface and is implementation dependent for the Camera API.
-When a camera specific value needs to be translated back into a generic parameter for purposes of comparing the current state of the camera with the template, the \emph{ToTemplate} method is used.
-This method receives camera specific value and returns a pointer to a new parameter object representing the current value as a generic parameter.
+These values are implemented in such a way that extra levels can be easily added by the programmer and their values adjusted to fine tune a cameras behavior.
+At the time of writing it is not possible to change the defined levels while the program is running but this may be implemented before the presentation at which time details will be explained.
 
 \section{Detecting differences between a template and actual configuration}
-As stated in requirement B5, a capability must exist to detect if a camera is still configured according to the parameters in the configuration.
-To achieve this, the CameraAPI has been split into three operations that split a configuration action into multiple steps.
+As stated in requirement B5 a capability must exist to detect if a camera still is still configured according to the parameters in the configuration.
+To achieve this the CameraAPI has been split into three operations that split a configuration action into multiple steps.
 The first operation is called Prepare, it pulls the current configuration from the camera and stores it for use by the other steps.
-The Prepare operation must be executed each time an operation is to be done to a camera to ensure the system has the latest configuration from the camera.
+The Prepare operation must be executed each time an operation is to be done to a camera to ensure the systems has the latest configuration from the camera.
 The other two operations are Configure and Compare.
 The Compare operation uses the parameters from the template and compares these with the parameters from the camera.
 If a mismatch exists the parameter being compared is added to a list which is displayed to the user to inform them of the actual and expected values of a parameter.
@@ -286,34 +279,20 @@ The user can then be presented with both the parameter value in the template as 
 
 %TODO Add other wireframes?
 \section{User interface}
-Initially the scope of the prototype included the implementation of a web interface.
-Because the implementation of the prototype took more time than initially expected the decision had to be made to remove the web interface from the scope.
-More rationale for this decision is given in chapter \ref{reflection}.
-
-\begin{figure*}[h!]
+The components of the system can be managed through a web interface.
+They will allow the user to create a new template and add parameters to it as seen in figure \ref{fig:templatewireframe}.
+The user should also be able to manage the relations between templates as well as registering new cameras to be managed by the system.
+At the time of writing not all wireframes have been completed.
+It was determined that the implementation of a graphical web interface was not feasible within the given time frame and as such the completion of the wireframes has become a low priority.
+It is expected that some extra wireframes will be added before the end of the project to give an indication of how the interface would have looked like if a GUI had been implemented.
+\begin{figure}[h!]
 	\centering
 	\includegraphics[scale=0.2]{wireframes}
 	\caption{Template overview  wireframe}
 	\label{fig:templatewireframe}
-\end{figure*}
-Before the scope had been narrowed some designs in the form of wireframes were made.
-Two windows were designed.
-The wireframe on the left of figure \ref{fig:templatewireframe} contains the page displayed to the user when configuring a template.
-At the top of the screen a message is shown indicating which template is being configured.
-Below that is a list of parameters contained within the template.
-On the left the name of the parameter is displayed, right of that examples of parameter values are displayed.
-Displayed on the far right of each parameter is a checkbox that can be clicked by the user to indicate that this parameter should be set in the template.
-If the checkbox is left unchecked the parameter row would be greyed out indicating that the template does not have a value for the parameter at this level and that the value is to be inherited from one of its parents.
-At the bottom of the screen two buttons are provided to cancel or apply the changes to the template respectively.
-
-The wireframe on the right of figure \ref{fig:templatewireframe} contains the main overview page of the web application.
-This window would display a list of all templates displaying their name and hierarchy plus the ability to edit the template.
-
-Further interfaces that would need to be designed must provide the user with the ability to add a new camera, a window to configure a camera according to a template and a window to view the differences between a template and the current state of a camera.
-As indicated these wireframes were not used to implement a web interface, however consideration to support these interfaces has been taken into account in the overall design of the system such as the ability to determine if a parameter belongs to the current template or to one of its parents.
+\end{figure}
 
 \section{REST API}
-Originally the prototype was meant to have an API so that the user could interact with the system through a web interface
-For the same reason the user interface was left out of the implementation, the REST API was also not implemented in the proof of concept.
-Nevertheless some designs for how this API would operate have been made.
+Originally the prototype was meant to have an API so that the user could interact with the system through a web interface.
+Unfortunately there was not enough time to implement this into the final prototype but some designs for how this API would operate have been made nonetheless.
 The API has been described according to the OpenAPI specification and can be found in appendix \ref{apdx:openapi}.

@@ -1,14 +1,60 @@
 \chapter{Conclusion}
-BauWatch currently has no proper management solution to control its camera configurations and wishes to find a solution to remotely manage security cameras of different brands and parameters.
-In order to solve this problem an analysis of requirements was done which led to research being conducted to determine if there were any existing solutions, a design being made and a prototype that was implemented.
+%Questions
+%
+%Subquestions:
+%	1. What parameters are of interest to BauWatch?
+%		List them?
+%		Interview
+%		Through interview determined X and Y were relevant and have been implemented in the proof of concept.
+%	2. How should a configuration be represented to express settings for different cameras?
+%	3. 
+%Table of achieved requirements shows musts and should have been achieved...
 
-While not all requirements have been met, the ones most relevant to the problem have been attained.
-At the time of writing it is expected that the designed system can be further developed from the prototype stage to transition into a fully functioning product to provide a satisfactory camera management solution.
-There are still some items that need to be implemented in the prototype to confirm their working but it is expected that these will be attained and at that time this conclusion will be updated accordingly.
+BauWatch currently has no proper management solution to control its camera configurations.
+To find a solution to this problem this thesis answered the question: ,,How can a large number of remote security cameras of different models and brands be managed from a centralized system?". This has been done by doing research on already existing solutions, creating a design based on collected requirements and implementing this as a proof of concept
 
-Some recommendations have been made for future studies or development in the next chapter.
+Before the design could be made it was important to know what kind of parameters are relevant to BauWatch.
+During research it was determined that parameters relating to automatic camera focus and zoom, video quality, network configuration and detection sensitivity were most relevant and the system has been designed in such a way that these parameters can be supported.
+
+Based on the conducted research and the collected requirements a design of a centralized parameter system with the ability of expressing settings for different cameras has been made.
+
+This design has then be implemented in a proof of concept of which all must and should requirements have been met.
+
+With the implemented proof of concept a method for managing a large number of remote security cameras of different models and brands has been provided which could be further developed into a fully functioning product.
+
+%In order to prove the validity of the design two of these parameters have been included in the proof of concept.
+%
+%The third question that was posed was how a configuration for a camera should be represented to express settings for different cameras.
+%Using the design it can be concluded that by providing a conversion layer between a template and CameraAPI, parameters only need to express a desired situation instead of an absolute value. 
+%
+%%%%%%%%%%%
+%%To gain a better understanding of what these camera configurations looked like, the first subquestion: ,,What parameters are of interest to BauWatch?" was answered through an interview with product management.
+%%In this interview it became clear that parameters  were interesting and that the design should be able to support these kinds of parameters.
+%%
+%%With these parameters in mind a design of the system architecture could be made as been presented in chapter \ref{sec:design} the other subquestions could be answered in the form of the design as seen in chapter \ref{sec:design} and the proof of concept.
+%%
+%%To be able to properly address this question it has been divided into three subquestions.
+%%First of all a better understanding of 
+%%The first question is ,What parameters are of interest of BauWatch?"
+%%After conducting an interview with product management it was clear that 
+%%settings that did not change often.
+%%
+%%Because
+%%
+%%In order to solve this problem an analysis of requirements was done which led to research being conducted to determine if there were any existing solutions, a design being made and a prototype that was implemented.
+%%
+%%The question this thesis answered is: 
+%
+%From the conducted tests it can be concluded that all requirements marked as must and should have been met.
+%
+%Some recommendations have been made for future studies or development in the next chapter.
+
+%%%
+
+
 
 \chapter{Recommendations}
+\label{sec:recommendations}
 Based on the results gathered by this project it is recommended that BauWatch further develops the proposed design into a fully functioning product.
 During the implementation of the prototype some aspects were discovered that were not implemented during this project but are important to considering when doing further research on this topic.
 
@@ -32,6 +78,7 @@ This way one can be sure that tests can be reliably conducted without depending 
 Of course this means that in the event something changes on the camera side, like a firmware update or undocumented change in a model, that extra tests are created to reflect the changed situation.
 
 \chapter{Reflection}
+\label{reflection}
 At the start of my graduation period halfway through November, the winter season was approaching and COVID-19 infection rates were again going up.
 As a result the country entered into another lockdown in an attempt to flatten the curve.
 This unfortunately meant that working from home was again in effect.
@@ -43,7 +90,7 @@ During this period a previous thesis on creating an ,,ONVIF Plug-in" \cite{keste
 This thesis was found to contain a lot of material that would have been produced within the original scope of the project.
 Originally the project was aimed at creating software that could change camera settings through ONVIF to allow universal control.
 After consulting with my mentor, graduation teacher and the graduation coordinator it was decided that the project could continue without delaying the project and going through the formalities of defining a new project if a adjusted proposal could be provided.
-Unfortunately redefining the project meant that the plan of approach had to be adjusted with new research objectives and problem description and with some adjustments this was finally approved after the christmas break in the seventh week after the starting date.
+Unfortunately redefining the project meant that the plan of approach had to be adjusted with new research objectives and problem description and with some adjustments this was finally approved after the Christmas break in the seventh week after the starting date.
 
 It was recommended to me to implement the prototype in Go.
 While I never programmed in Go and had to learn it from scratch I was interested in the language and since a lot of knowledge was present at BauWatch I did not want to dismiss it right away.

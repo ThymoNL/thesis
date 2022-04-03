@@ -1,72 +1,116 @@
 \chapter{Implementation}
+Based of the design in chapter \ref{sec:design}, a proof of concept has been built demonstrating that the design is valid and that it goes beyond the original objective of remotely administering camera's.
+With little modification it could also be made to work with devices other than camera's.
+This chapter describes the environment in which the application was built and how different components have been implemented.
+
 \section{Development environment}
 BauWatch has git repository templates for commonly used programming languages.
 These templates contain a standardized directory structure along with configuration files for the Gitlab code pipelines.
 This makes it easy to start a project and immediately get started with a basic environment to run linters, documentation generators and automatic tests.
 
-\section{Modules}
+\subsection{Modules}
 The application is divided into three modules and one main file.
 Within the modules the unit tests have been integrated and are suffixed with "\_test".
 Inside the root directory of the project ancillary files like CI configuration and a Makefile are also included.
-The makeutils directory contains files supplied by BauWatch that aide in doing some checks that need to be done before changes can be merged to the master branch.
+The makeutils directory contains files supplied by BauWatch that aid in doing some checks that need to be done before changes can be merged to the master branch.
 There is no direct dependency on makeutils and the project does not require them to compile.
 
 \subsection{Continuous Integration}
 By default all repositories are set up to check all code submitted as a merge request complies with a set of merge checks.
 First of all the continuous integration environment checks if the code successfully compiles and passes its checks.
 After that the commits are checked to verify they refer to the Jira story the feature branch is associated with and if a changelog file describing the changes for that story is present.
-If all checks pass the merge request will be marked with a green check mark indicating it is ready to be reviewed by someone.
+If all checks pass, the merge request will be marked with a green check mark indicating it is ready to be reviewed by someone.
 Once all review comments have been resolved and the reviewer approves the changes they can be merged back into the master branch by someone with maintainer permissions for that repository.
 
-%TODO Maybe add something about the tools used? These are gitlab (CI), GNU Make, golang tools, Docker. Might be useful to describe testing
+\section{Templates \& Parameters}
+Templates have been implemented by defining a struct and associated pointer-receiver methods as defined in the class diagram (Figure \ref{fig:class_diagram}).
+Instances of these structs represent nodes of a tree of which a pointer to the root node is stored in the BaseTemplate variable.
+The root node is the upper-most layer of the templates and is also used as the starting point for search operations et. al. and will be instantiated to a default value when the program is started for the first time.
 
+\subsection{Parameters}
+As part of the prototype three parameter types have been provided.
+The first two parameter types, IntegerParameter and StringParameter, implement a simple integer- or string based value respectively.
+The third parameter, LevelParameter, implements four "levels".
+As described in the design this parameter type is used to map a single value onto multiple cameras using a different range for that parameter.
 
-%\section{Parameters not in parent}
-%Parameters can optionally be overridden by the base templates children. This is implemented using a map.
-%An issue arises when in child 2 param c is added. That param is not defined in child 1 or the base template.
-%How can this param be set in the first place?
-%Guard against this in the model and disallow adding parameters through the webpanel.
-%Additionally the base template should be initialized from some presupplied default, be it yaml or constants.
+Out of these three types, StringParameter and LevelParameter have been used to implement the configuration of a NTP server and motion detection sensitivity level for both the Hikvision and VCA camera's.
+This has been done to demonstrate that a parameter can be used directly without the need for translating it to a camera specific value as well as demonstrating that when using a converter, a generic parameter can be mapped to a camera specific value and vice versa.
 
-%\section{Template implementation}
-%Pics:
-%Struct, interactions between templates
-%Describe how template stacking works
+Parameters can be added to a template on demand and their presence is checked by the CameraAPIs.
+This way a CameraAPI will not try to read or write a parameter if it has not been defined or a CameraAPI will ignore it completely if the device it's configuring does not support that parameter.
 
-\section{Using the system}
-The system can be used from the commandline using the following commands:
-\begin{enumerate}
-	\item help: List the available commands
-	\item exit: Exit the program
-	\item quit: Alias for exit
-	\item camera: Configure a camera
-	\item template: Configure a template
-	\item load: Load a template from disk
-	\item revisions: Show all the revision of a template (Not yet implemented)
-	\item revert: Revert a template to a previous revision (Not yet implemented)
-	\item compare: Check if a camera is configured according to its template and if not show the differences
-	\item configure: Configure a camera using the template that has been assigned to it
-\end{enumerate}
-
-\section{Saving}
-A lot of time was initially spent implementing the template save and loading functionality.
-First an attempt was done using polymorphism of yaml. However this proved problematic as during unmarshaling the library did not know what type of parameter should be instantiated.
-After trying to come up with various solutions to infer the type of the parameter in the yaml file the choice was made to encode all parameters in the same way and specifying their type inside a type field.
-This made it possible to put all parameters inside the same struct and deferring the instantiation of the proper parameter type to a later point in the code.
+\subsection{Serialization}
+Early on in the development of the prototype the idea was to create an abstract parameter implementation from which all parameters would inherit to provide the actual implementation for that parameter type.
+This proved to be a challenging approach as Go does not directly support the concept of abstract classes although an method of how such a concept could still be used in Go was proposed by Adrian Witas\cite{witas_abstract_2018}.
+Using this method a way to have parameter types inherit from an abstract parameter was implemented which could be serialized to YAML.
+However after this approach was used, problems were encountered when trying to deserialize a parameter from a file into memory.
+Due to the polymorphic nature in which the parameters were now stored, the library that was used for serializing and deserializing the parameters could not determine what kind of parameter had to be instantiated to represent the right kind of parameter.
+After spending multiple days trying to come up with various solutions to infer the type of the parameter in the YAML file, the choice was made to encode all parameters in the same way and to specify their type inside a type field.
+This made it possible to put all parameters inside an intermediate struct, removing the abstract implementation, such that the proper parameter type no longer had to be inferred at the time it was being instantiated by the library but could be delayed to a later point where the application was in control of the intermediate struct.
 Doing it this way also shrunk the code required to implement the parameters by quite a bit.
 
-\section{Loading}
+% TODO Keep/merge this?
+\subsection{Loading}
 When a load instruction is given to the system a call is done to LoadTemplate with the name of the template to be loaded.
 This function loads the requested template and all other templates needed to satisfy its parents.
 If a template could not be found this function will return nothing and the program will print an informational message that the template could not be loaded.
 If the template depends on a parent template and this template could not be found an error condition is reported.
 This is done because the program only allows a template deletion when it does not have any other templates that depend on it.
-Thus this condition can only if the templates stored on disk were corrupted or modified outside the program.
-To limit the scope of the prototype this condition can not be recovered from and has to be manually resolved by removing the affected templates or editing the YAML files to get them back in the proper state.
+Thus this condition can never occur under normal circumstances.
+The only way this condition could be met is if the templates stored on disk were corrupted or modified outside the program.
 
-\section{Hikvision}
-The Hikvision api was implemented using the Hikvision ISTAPI documentation\cite{noauthor_intelligent_nodate}.
-Two parameters had to be implemented.
+\subsection{Revisions}
+To implement the ability to maintain revisions of templates the go-git library has been used.
+Whenever a template is created or modified the application prompts the user for a commit message.
+The template is then stored to disk, added to the git index and committed with the entered message and author information gathered at the start of the program or through the `author` command.
+
+In order to show auditing information about what changes to a template were made by who and at what time a command needs to be provided showing information about all revisions for a particular template.
+When a user requests to list the revisions for a particular template the application will display a list for each revision displaying: a abbreviated commit hash, author name, time of revision creation and a commit message.
+This list is roughly equivalent to a `git log -- <filename>` command.
+
+To revert a template to an earlier state the intention was to do something similar to a git revert.
+Unfortunately this command was not implemented by the library making it necessary to spent extra time implementing this manually using the libraries' plumbing functions.
+To revert a template the user supplies the hash of the commit they want to revert to.
+After that the same list used to display the revisions of a template to the user is generated and the program iterates over this list to find the commit the user wants to revert to.
+When a commit matching the supplied hash is found the file contents of the commit at this point in time are written to the current template and a new commit is made from this.
+This results in a new commit that is the inverse diff of the changes made between the commit being reverted to and the template state at the time of reversion, thus satisfying the ability to revert a template to an earlier state.
+
+
+\section{User interface}
+To be able to interact with the system and execute the manual system tests the application needs to have some sort of user interface.
+Originally the idea was to have the user interact with the application through a web interface.
+For this web based interface to work a couple of things are needed.
+First of all the application should have a REST API through which a client can make changes to templates and trigger actions to cameras.
+Additionally wireframes are needed to determine what kind of functionality the interface should have and how it should look like.
+To make this all work, the client would also need some logic (most likely JavaScript) and the application would likely need some form of multithreading so that requests can be handled asynchronously and for multiple users at a time.
+
+In the latter half of the project when the implementation of the application was already underway, it was determined that it would not be possible to implement all of the components required for a working web application within the remaining time.
+This was mostly caused by the fact that the scope of the project had to be adjusted at the end of the definition phase and that the lack of experience in the Go programming language were more time consuming than anticipated.
+Still as seen in chapter \ref{sec:design}, some early designs for a REST API and wireframes have been included.
+
+Because the system still needed a user interface through which the system tests could be conducted and demonstrations of the application could be given, the choice was made to implement a command-line interface instead.
+This way all abilities of the application could still be exercised but in a way that required less time to implement.
+
+The following commands are provided in the command-line interface and their usage has been demonstrated in chapter \ref{sec:validation}:
+\begin{itemize}
+	\item help: List the available commands.
+	\item exit: Exit the program.
+	\item quit: Alias for exit.
+	\item camera: Configure a camera.
+	\item template: Configure a template.
+	\item load: Load a template from disk.
+	\item revisions: Show all the revision of a template.
+	\item revert: Revert a template to a previous revision.
+	\item compare: Check if a camera is configured according to its template and if not show the differences.
+	\item configure: Configure a camera using the template that has been assigned to it.
+	\item list: Show an overview of all templates and their relations as a tree.
+	\item listcameras: List all cameras, the API they use and the template being used.
+\end{itemize}
+
+\section{Device integration}
+\subsection{Hikvision}
+The Hikvision API was implemented using the Hikvision ISAPI documentation\cite{hikvision_intelligent_nodate}.
+In order to demonstrate that the system works two parameters of different types were implemented.
 The first one was the motion detection sensitivity parameter.
 This parameter is provided by the API inside the motionDetection object.
 The XML for this has been mapped in a struct and is configured by reading the object, editing it and writing it back.
@@ -87,8 +131,104 @@ The configure step also depends on the data gathered using the prepare step and 
 By using the GetParam function of a template the template will provide a pointer to the proper parameter as described in the parameter enumeration part.
 The parameter provides the value that should be input to the XML body and when all parameters that the API supports have been updated the configuration is written back to the camera as documented in the manufacturer API documentation.
 
-If the camera reports an error condition during the configuration process this error condition is reported back to the user.
+If the camera reports an error condition during the configuration process, then this error condition is reported back to the user.
 
-\section{VCA}
-At the time of writing an implementation that can interact with a VCA camera has not been completed yet.
-This will be part of the final portfolio.
+% TODO Hyphenation
+\subsection{VCA}
+In order to demonstrate that the system could work with multiple types of cameras a CameraAPI was also implemented for the VCA IPX3802SV camera.
+The VCA API was implemented using the IPN Series HTTP API Manual\cite{udp_technology_ltd_ipn_2018} provided by the manufacturer.
+While the API for this camera also uses HTTP like the Hikvision camera it is designed in an entirely different way.
+The Hikvision API is a REST API while the IPN Series HTTP API can best be described as a CGI based HTTP API.
+According to the documentation most of the configuration can be modified by interacting with the script located at \emph{/nvc-cgi/admin/param.fcgi}.
+
+To retrieve the value of a certain parameter a HTTP GET request is done using the parameter and supplying \emph{?action=list} as a URL query string.
+The response of this request is a plain text list representing all camera parameters as key-value pairs separated by an equals (=) sign. Where the key is the identifier of the parameter and the value contains the current value in the format for that parameter specified by the documentation.
+Identifiers are a combination of a parameters group and the name of the parameter.
+For example the identifier \emph{MD.Ch0.Z0.sensitivity} indicates that this is the \emph{sensitivity} parameter of the \emph{MD.Ch0.Z0} group.
+In this case the group is shorthand for MotionDetection, Video stream 0, Zone 0.
+Because the list action returns a list of all parameters it is possible to reduce the amount of parameters being returned by use of the \emph{group} URL query string.
+By supplying this parameter the API will only send the parameters if they start with the provided string.
+Eventhough the query string is called \emph{group} it can also be used to filter for a single parameter.
+If for example a HTTP GET is done using \emph{/nvc-cgi/admin/param.fcgi? action=list\&group=MD.Ch0.Z0.sensitivity} only the value of Video stream 0, Zone 0 will be returned as plain text.
+
+In order to write the value of a parameter to the camera the documentation specifies to do a HTTP POST request to the same path but setting \emph{action=update} instead.
+However in practice it was found that writing a value to the camera also requires the HTTP method to be set to GET eventhough section 2.2.4 of the documentation clearly states ,,When using FCGI, POST method must be used; GET is not allowed."\cite{udp_technology_ltd_ipn_2018}.
+This was determined to be a documentation error by the manufacturer and the HTTP method was maintained as GET to allow the API to accept the parameter.
+In addition to setting the action to \emph{update}, \emph{group} should be set to the group name of the parameter and an additional query parameter in the format \emph{name=value} with the new value must be supplied.
+The request body is ignored by the API.
+A complete example URL of a parameter update is a HTTP GET to \emph{/nvc-cgi/admin/ param.fcgi?action=update\&group=MD.Ch0.Z0\& sensitivity=123}.
+
+When a request to the camera is made the camera always responds with a HTTP 200 OK even if an error has occurred.
+The response body will contain the requested data or a status message acknowledging the request or reporting an error.
+The format of this status message is a hash sign followed by a status code, a status message, the requested action, the specified group and a detailed error description.
+
+\subsection{Adding support for a new device}
+From discussions with the focus group it was gathered that the system should be designed in such a way that it can be easily extended to add support for new devices with different capabilities.
+To make this possible the prototype has been divided into a couple of components that specify the behavior for a device or parameter.
+
+\subsubsection{CameraAPI}
+To add support for a new type of camera the \emph{CameraAPI} interface should be implemented.
+This interface consists of three methods.
+The first method the new API should implement is the Prepare method.
+This method is responsible for preparing the system to configure or compare the current state of a camera and is called before each operation by the main application.
+% TODO Insert screenshot of code?
+As an example of what the Prepare method should do one can refer to the implementation of the HikvisionISAPI or the VCAAPI.
+Both of these implementations communicate with the camera to retrieve the current state of the motion detection and NTP parameters and store this in the APIData field in the camera struct.
+
+The second method that must be implemented is Configure.
+The purpose of this method is to take the parameters from the template the camera has been assigned to and write these values to the camera.
+Both implementations provided in the prototype first check if a supported parameter has been defined in the template or one of its parents.
+When the parameter has been found the API will take the value of that parameter, update it in the data object that has been retrieved by the Prepare method and will use the manufacture API to update the parameter in the camera.
+
+The third and last method that must be implemented is Compare.
+When this method is called the API should compare the values that were retrieved in the Prepare method to the Parameters configured in the template and add any mismatches between these two to a list.
+The purpose of this list is so the user can see if a camera has been configured in accordance with the template and if not show what the current value is and what it should be according to the template.
+
+Finally the new CameraAPI should be added to the list of APIs in the apiPicker function of the main application so the new implementation is shown to the user when adding or changing a camera.
+
+This generic method of providing implementations of a new CameraAPI does not have to be strictly limited to cameras.
+While the scope of this prototype was purely aimed at cameras the interface could just as well have been called DeviceAPI as there is nothing that limits the interface to work for cameras only.
+As long as the targeted device supports a way to read and write settings through some kind of API it should be possible to implement a CameraAPI driver for it.
+
+\subsubsection{Parameter and converter}
+If it is determined that a new parameter can not be represented by an already existing parameter type the system needs to be extended with a new kind of parameter.
+In order to add support for a new kind of parameter it should first be known if this parameter requires conversion to a camera specific value or if that value can be used as-is in all cameras.
+
+% TODO Explain why Parameter is a single struct.Reason: Makes YAML mapping easier. Explain here or elsewhere?
+Assuming the case of no conversion all that needs to be done is to extend the Parameter struct inside the template module with the ability to handle the data type of the new parameter.
+First of all the name of the new type should be defined in the list of parameter type constants.
+After that has been done this constant can be used to make decisions based on the parameter type being passed to the Get and Set method to store and return a value of the proper format for that parameter.
+In addition the String method should be extended to return a string representing the parameter in a human readable format.
+This String method is used when the user runs the compare command on a camera to show the differences between the values of the template and the camera.
+After these changes have been made a new factory method should be created that instantiates a parameter of the newly created type and initializes it to a default value.
+Finally the NewParameter method should be extended so that the program can create an instance of the new parameter by supplying the name it should have and the Parameter type constant.
+
+In case the parameter does require conversion to a camera specific value the extra step of creating a new converter is required.
+This can be done by implementing a struct and associated pointer-receiver methods that satisfy the \emph{ParamConverter} interface.
+These converters are not directly associated with parameters but are registered with the CameraAPI they are doing the conversion for instead.
+Only two methods are to be implemented.
+The \emph{ToCamera} method receives a pointer to a Parameter that can be used to convert the generic value from the parameter to a value specific for the CameraAPI.
+The \emph{ToTemplate} method receives a camera specific value and must a pointer to a newly instantiated parameter so that it can be used to detect mismatches between the current state of the camera and  a generic template value.
+The \emph{ParamConverter} interface does not necessarily need to be implemented for all CameraAPI's.
+If a generic value is already sufficient for a particular camera the choice can be made not to implement a converter and only do this for CameraAPI's that do need a conversion.
+An example of how to implement the conversion of parameters can be found by looking at the sensitivity converters that have been implemented for the Hikvision and VCA CameraAPI's.
+
+\subsubsection{Summary}
+Adding support for a new camera can be summarized into a couple of simple steps.
+\begin{enumerate}
+	\item Create a new implementation of the CameraAPI interface in the camapi package
+	\item Implement the Prepare step to fetch all required data and store this in the camera's APIData field
+	\item Implement the Configure step and map the parameters from the camera's template and write these to the camera
+	\item Implement the Compare step and return a list of mismatching parameters
+	\item Add the new API to the list of CameraAPI's in the apiPicker function
+\end{enumerate}
+
+Support for a new camera can be summarized as:
+\begin{enumerate}
+	\item Adding a new definition of a parameter type and extend the factory method.
+	\item Implement methods to set and retrieve the values in the proper format.
+	\item Extend the String method to output the parameter value in a printable format.
+	\item Optionally implement converters and tie these to the respective CameraAPI
+\end{enumerate}
+
+Because the system has been split into multiple components it is possible to quickly add support for new devices or parameter types without having to make major modifications to existing code.

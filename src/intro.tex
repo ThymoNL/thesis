@@ -1,11 +1,11 @@
 \begin{titlepage} 
 \maketitle
 \vspace*{\fill}
-Status: Draft revision
-Version: 0.5
-Student number: 452434
-Degree: Software Engineering
-Saxion University of Applied Sciences
+Status: Final\newline
+Version: 1.0\newline
+Student number: 452434\newline
+Degree: Software Engineering\newline
+Saxion University of Applied Sciences\newline
 Bachelor Thesis
 \thispagestyle{empty}
 \end{titlepage}
@@ -24,25 +24,26 @@ Peter Ebben & Saxion & Saxion mentor & p.w.g.ebben@saxion.nl
 \\ \hline
 \end{tabular}
 \end{center}
+
 \thispagestyle{empty}
-%\chapter*{Acknowledgements}
-%TBD
-%\thispagestyle{empty}
 \chapter*{Summary}
-As a part of the graduation phase of the bachelor degree HBO-ICT: Software Engineering this thesis has been written by Thymo van Beers at BauWatch during a research project lasting 20 weeks.
-BauWatch has a large amount of cameras in operation throughout Europe.
-Currently they have no ability to adequately manage the parameters the cameras are configured with.
+This thesis is the result of the graduation phase of the HBO-ICT: Software Engineering bachelor degree by Thymo van Beers.
+A research project was conducted at BauWatch lasting 20 weeks.
+Bauwatch provides outdoor security throughout Europe using thousands of cameras.
+The goal of this thesis is to design a solution that can easily manage these cameras.
 The main research question is, "How can a large number of remote security cameras of different models and brands be managed from a centralized system?"
 The goal of the project was to research possible solutions and to build a prototype which allowed for the centralized remote management of camera parameters.
 
-In order to define the requirements of the system a focus group was formed with two engineers who would further develop on the project outcomes and an interview was conducted with product management to better define the problems being experienced.
+In order to define the requirements of the systen a focus group was formed with two engineers.
+They would provide some technical requirements so the project outcomes could be used to develop a product after the project ends.
+Additionally, an interview was conducted with product management to better define the problems being experienced.
 
-With the obtained input research was done and an idea was lended from other lifecycle management software to orchestrate camera paramaters into templates.
+Using these requirements a proof of concept of a centralized system has been developed that stores configuration parameters as templates.
+The configuration using these templates can be done through an extensible interface so that support for new types of devices can easily be added.
 Additionally a method is given for maintaining revisions of these templates using git.
 These techniques have been combined into a system design and the workings of this design are implemented as a prototype.
 
-The results of this thesis indicate that management of different cameras through a single system is possible and that the design allows for the addition of extra camera models and parameter types without much effort.
-
+The results of this thesis show that management of different cameras through a single system is possible.
 In the future the prototype could be extended with a graphical user interface and a client/server model as the current solution only provides for single user access through a text interface.
 \thispagestyle{empty}
 
@@ -108,11 +109,11 @@ The only way it is currently possible to verify a configuration is by checking t
 \section{Objective}
 BauWatch wants to find a solution which makes it possible to manage camera configurations.
 The condition to this solution is that the alternate configurations can be remotely administered in an easy way.
-This should be done in such a way that its insightful what configuration a camera is using.
+This should be done in such a way that it's insightful what configuration a camera is using.
 The objective is to build a prototype of a software system that is able to configure the cameras to a predefined set of parameters while still allowing
 more fine grained control for a specific subset of those cameras.
 
-In order to determine how this system should be built, a research question was formulated and divided in subquestions. They will be described in the next section.
+In order to determine how this system should be built, a research question was formulated and divided in subquestions. They will be described in the next sections.
 
 % De wens van BauWatch is om het mogelijk te maken om alternatieve configuraties te gebruiken wanneer deze de kwaliteit van de bewaking te verbeteren. Onder de voorwaarde dat het mogelijk om deze alternatieve configuraties te kunnen beheren.
 % Hierbij kan gedacht worden aan het bijo
@@ -131,17 +132,17 @@ In order to determine how this system should be built, a research question was f
 % Cameras will need to be registered with the system using their model number, IP-address and authentication information since there is no software system or database from which this can be queried. The system should also have the ability to detect any mismatches between a template and camera so the user knows that it needs to be updated.
 
 \section{Main question}
-The main question that the project will answer is: ,,How can a large number of remote security cameras of different models and brands be managed from a centralized system?"
-This question is further divided into the following sub-questions.
+The main question that this thesis will answer is: ,,How can a large number of remote security cameras of different models and brands be managed from a centralized system?"
+This question is further divided into the sub-questions listed in the next section.
 
 \section{Subquestions}
 In order to come to an answer to the main research question it has been split into the following subquestions.
 These questions will be answered in this thesis using methods from the Development Oriented Triangulation (DOT) framework \cite{noauthor_dot_nodate}.
-\begin{enumerate}
+\begin{itemize}
 	\item What parameters are of interest to BauWatch?
-	\item How should a configuration be represented to express settings for different cameras?
 	\item How would the system architecture of a centralized parameter system be designed and implemented?
-\end{enumerate}
+	\item How should a configuration be represented to express settings for different cameras?
+\end{itemize}
 
 \section{Scope}
 % The project has commence on 15-11-2021 and will be completed by 22-04-2022. The scope of the project will be limited to the configuration of cameras through their APIs only. No modifications 
@@ -154,9 +155,10 @@ These questions will be answered in this thesis using methods from the Developme
 % The first camera that will be investigated is a Hikvision DS-2DE4225IW-DE. BauWatch expressed that these cameras will be more actively used in the future and that it would be nice to have a working prototype using this camera model. The second camera that will be investigated is a VCA IPX3802SV because it
 % provides a different API from the Hikvision and is actively in use within BauWatch.
 
-The project commenced on November 15th 2021 and ended on April 22nd 2022. The scope of the project was limited to the configuration of cameras through their own APIs only and
-without making any firmware modifications. Since only a proof of concept was to be made, no special consideration to BauWatch' network architecture was given although it became
-evident that this would not cause any obstacles either since all cameras can be reached on a unique IP-address.
+The project commenced on November 15th 2021 and ended on April 22nd 2022. The scope of the project was limited to the configuration of cameras through their manufacturer specific APIs only and without making any firmware modifications.
+The network architecture within BauWatch is specifically out of scope of this thesis, as it is possible to reach any camera on there specific DNS address.
+
+%Since only a proof of concept was to be made, no special consideration to BauWatch' network architecture was given although it became evident that this would not cause any obstacles either since all cameras can be reached on a unique IP-address.
 %During the definition phase of the project a thesis on implementing
 %an ONVIF plugin was found. To prevent overlap the project was reformulated so that ONVIF would not be required, the prototype could however support an interface to ONVIF in the
 %future if such an interface is deemed necessary.

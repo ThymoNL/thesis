@@ -44,8 +44,8 @@ Another problem he indicated was that current tooling does not provide a practic
 
 After introducing the goal of the project the question was asked as to what parameters he would find valuable to have in the initial prototype.
 The parameters that were named as candidates were: automatic camera focus and zoom, video quality, network configuration and detection sensitivity.
-Out of these parameters some of them were of particular interest to him. The first one being video quality. It would be nice to configure video quality related settings like a
-cameras bitrate and resolution because video masts may be in locations with reduced cellular network connectivity. In that case it would be beneficial to lower the video quality
+Out of these parameters, some were of particular interest to him. The first one being video quality. It would be nice to configure video quality related settings like a
+camera's bitrate and resolution because video masts may be in locations with reduced cellular network connectivity. In that case it would be beneficial to lower the video quality
 for these cameras to reduce network load. The second parameter of interest was detection sensitivity. This parameter regulates how sensitive a camera is to movement before it
 triggers an alarm to the dispatchers to attract their attention. It would be nice to quickly change this parameter so that the frequency of alarms and false alarms can be balanced.
 
@@ -78,13 +78,13 @@ The host groups that have been nested under this group will inherit its settings
 For example one could have a base level host group that defines the settings for the operating system, and nested host groups can define settings for the software running on that system.
 
 While Foreman uses these host groups for defining parameters for operating systems this concept also translates to other types of systems.
-Because of that the choice is made to use these host groups as the basis for designing the templating system for the cameras.
+Because of that the choice is made to use the philosophy of host groups as the basis for designing the templating system for the cameras.
 
 \section{Revision history}
 As was indicated by the focus group there should be a way to keep a revision history between templates.
 When a change to a template turns out to be problematic it should be possible to revert it to an earlier revision.
 Furthermore it should also be possible to know who made a change and with what intention.
-To determine the best way to implement this a couple of option were evaluated.
+To determine the best way to implement this a couple of options were evaluated.
 
 \subsection{One file per revision}
 The first option that was evaluated was to use one file per template revision.
@@ -108,11 +108,11 @@ This could be prevented by adding leading zeroes to the filename but that only d
 If for example four digits would be used where the unused digits are zeroed the descending sorted order would be: 0010, 0009, 0008, 0007, 0006, 0005, 0004, 0003, 0002, 0001.
 As can be seen this would solve the problem but as soon as more than 9999 revisions are made the same problem occurs.
 Another potential solution unaffected by this problem is the use of the file modification time as stored on the filesystem.
-Using this file attribute would work in most cases although it can be affected by external factors such as changing system time or restoring from backups where the proper file attributes are not restored \cite{noauthor_mtime_nodate}.
+Using this file attribute would work in most cases although it can be affected by external factors such as changing system time or restoring from backups where the proper file attributes are not restored \cite{noauthor_mtime_2018}.
 
 \subsection{Git}
 The second option that was evaluated was to use git.
-While git is most often used for tracking changes in software source files it describes itself as a fast, scalable, distributed revision control system or "stupid" content tracker, since it makes no assumption about what content is stored in it \cite{truyers_git_2016}.
+While git is most often used for tracking changes in software source files its manpage describes it as a fast, scalable, distributed revision control system or "stupid" content tracker, since it makes no assumption about what content is stored in it \cite{truyers_git_2016}.
 
 Git can be used to keep track of changes in a repository by chaining them into commits.
 Each commit contains a snapshot of a set of files, a message that gives a description about the changes and metadata like who made a change and when.
@@ -129,53 +129,29 @@ By changing what commit the HEAD points to you can revert the state of the files
 
 Normally a user of git would interact with the repository through a command line or graphical user interface using a set of commands.
 There are many different commands that are available to the user.
-Examples of the most commonly used commands to view and record changes are: `git add` to mark files to be committed (called staging), `git commit` to commit all the files that have been staged, `git push` to upload local changes to a remote git repository and `git status` to get a brief summary of that state of the repository. There are many more commands that can be used but for the purposes of brevity these have been omitted.
+Examples of the most commonly used commands to view and record changes are: `git add` to mark files to be committed (called staging), `git commit` to commit all the files that have been staged, `git push` to upload local changes to a remote git repository and `git status` to get a brief summary of that state of the repository. There are many more commands that can be used but for the purpose of brevity these have been omitted.
 
 Several libraries exist that implement these commands and allow us to use git from a program to make commits of our data and to revert back to an earlier version if necessary.
-Some notable ones are libgit2\footnote{\url{https://github.com/libgit2/libgit2}}, a pure C based implementation, and go-git\footnote{\url{https://pkg.go.dev/github.com/go-git/go-git/v5}}, an implementation in the Go programming language.
+Some examples are libgit2\footnote{\url{https://github.com/libgit2/libgit2}}, a pure C based implementation, and go-git\footnote{\url{https://pkg.go.dev/github.com/go-git/go-git/v5}}, an implementation in the Go programming language.
 
 Git makes a distinction between two types of commands.
 The first type of command categorizes the most commonly used high-level commands which have been described earlier and are called "porcelain" functions.
 The second type involves the low-level functions that directly modify git's internal datastructure and are called "plumbing" functions.
-These plumbing functions are normally used by the "porcelain" functions to implement their behavior but they can also be used for more advanced usecases where the porcelain function are not sufficient.
+These plumbing functions are normally used by the "porcelain" functions to implement their behavior but they can also be used for more advanced usecases where the porcelain functions are not sufficient.
 
-Storing program data using git's porcelain functions carries the potential for optimization by using git as a "bare" repository using the plumbing functions.
-This way all files exist only within the git database instead of the filesystem.
-A method of using the plumbing functions to directly create blobs in git's database and essentially turning it into a NoSQL database is described in an article by Kenneth Truyers\cite{truyers_git_2016}.
+An example of such an advanced usecase is to use git as a "bare" repository and only making use of the plumbing fuctions.
+A "bare" repostiory in the context of git is a git repository that only contains the \textit{.git} directory without having a branch actively checked out in the working directory.
+The method proposed by Truyers\cite{truyers_git_2016} uses the plumbing functions to directly create blobs in git's database, essentially turning it into a NoSQL database.
+The claimed advantages of this method are that data only needs to be saved a single time by creating a blob in the database without having to write it to disk first.
+In addition this method is claimed to benefit from automatic data deduplication provided by git and an ability exists to work on multiple branches at the same time without the need of having multiple checked out directories.
 
-%How would this work using plumbing functions to optimize \cite{noauthor_git_2016}
-%In short: By using a plain git repository there are a couple of disadvantages.
-%All data needs to be written to disk before they can be added to git.
-%Data is saved multiple times, once as a file and again in git as a blob.
-%There is no data deduplication.
-%
-%Conclusion of this: using plumbing commands provides some optimizations but it requires quite a bit of work to implement.
-%Because of that the choice is made to use a simple git repo for the prototype but suggest this optimization as a future improvement in the Recommendations chapter...
-%
-%all files need to be sorted
-%git gives it to you instantly
-%difficult to diff
-%proven to work
-%possibility for backups
-%
-%
-%Argument: Is git overkill? Why use it or the other suggested solution. Make a choice.
-%
-%
-%NoSql object database?
-%Maybe also look at more classical databases like sql/Mongodb? - no experience and the requirement state a human readable format which a database is not.
-%Does it allow revisions?
-%
-%Possible optimizations
-%
-%Revision can be stored in git or as separate files
-%With git the choice can be made between using the porcelain functions to add files and commit them or to use the internals to manually create blobs.
-%The latter has the advantage of not having an extra working copy but requires more work and may introduce more programming errors.
-%
-%The way these could be stored on disk are having multiple templates in the same directory, having a separate directory for each template or putting all templates in the same file.
+Keeping in consideration the objective of the project it was determined that the offline storage of data would not necessitate the use of multiple branches.
+Furthermore the benefit of data deduplication does not apply because there is no expectation that any duplicate files will be stored.
+This means only the benefits of saving data a single time in the git database remain.
+Because of this it was decided that the extra time needed to implement the proposed method would not outweigh the limited benefits that would be gained by using it over the regular method using porcelain functions.
 
 \subsection{Conclusion}
 Looking at both of these options it is evident that the manual approach of using numbered files has some undesirable effects.
 Because of that the choice is made to implement revisions using git's porcelain functions.
-While the approach of using plumbing functions with a bare git repository would also be a suitable solution it would take more time to implement.
-Considering that only a prototype will be built that uses just a handful of templates the benefits of using the plumbing functions are considered to be negligible and would not outweigh the time needed to implement it.
+Considering that only a prototype will be built that uses just a handful of templates the benefits of using Truyers' method are considered to be negligible and would not outweigh the time needed to implement it.
+If in the future the method using porcelain functions proves to be a performance- or storage bottleneck Truyers' method can be revisited to further evaluate its use to optimize the storage of data.
